@@ -21,16 +21,16 @@
 
 ## Performance Budgets
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
+- **Target Framerate**: 60fps (all target devices)
+- **Frame Budget**: 16ms
+- **Draw Calls**: < 100 per frame (2D board game — should be well under this)
+- **Memory Ceiling**: 256MB (comfortable for mobile, leaves headroom for OS)
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Framework**: GdUnit4
+- **Minimum Coverage**: 80% for core/gameplay systems, best-effort for UI
+- **Required Tests**: Board rules (all capture/win conditions), AI evaluation, reputation formulas, save/load round-trips
 
 ## Forbidden Patterns
 
@@ -45,4 +45,4 @@
 ## Architecture Decisions Log
 
 <!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
+- **ADR-0001**: [Core Game Architecture](../../docs/architecture/adr-0001-core-game-architecture.md) — Layered systems, Autoload singletons, signal-driven communication, distributed state, Godot Resources for data (Accepted 2026-03-28)

@@ -1,0 +1,9 @@
+; PROTOTYPE - NOT FOR PRODUCTION
+; Minimal project file to run board rules tests
+
+[application]
+config/name="Board Rules Prototype"
+run/main_scene=""
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
