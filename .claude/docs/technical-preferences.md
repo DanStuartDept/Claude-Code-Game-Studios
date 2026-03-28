@@ -5,19 +5,19 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: Godot 4.6
+- **Language**: GDScript (primary), C++ via GDExtension (performance-critical)
+- **Rendering**: Compatibility (OpenGL ES 3.0) — broadest mobile device support
+- **Physics**: Jolt (Godot 4.6 default)
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: PascalCase (e.g., `PlayerController`)
+- **Variables/Functions**: snake_case (e.g., `move_speed`)
+- **Signals/Events**: snake_case past tense (e.g., `health_changed`)
+- **Files**: snake_case matching class (e.g., `player_controller.gd`)
+- **Scenes/Prefabs**: PascalCase matching root node (e.g., `PlayerController.tscn`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_HEALTH`)
 
 ## Performance Budgets
 
