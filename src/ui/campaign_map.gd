@@ -52,6 +52,7 @@ var _header_rep_tier: Label = null
 var _card_container: VBoxContainer = null
 var _scroll: ScrollContainer = null
 var _status_label: Label = null
+var _chapter_dots: HBoxContainer = null
 
 # --- Reputation Breakdown Panel ---
 var _rep_panel: PanelContainer = null
@@ -125,7 +126,7 @@ func _build_ui() -> void:
 	header.offset_left = 16.0
 	header.offset_right = -16.0
 	header.offset_top = 10.0
-	header.offset_bottom = 130.0
+	header.offset_bottom = 155.0
 	header.add_theme_constant_override("separation", 4)
 	add_child(header)
 
@@ -172,10 +173,16 @@ func _build_ui() -> void:
 	_status_label.visible = false
 	header.add_child(_status_label)
 
+	# Chapter navigation dots
+	_chapter_dots = HBoxContainer.new()
+	_chapter_dots.alignment = BoxContainer.ALIGNMENT_CENTER
+	_chapter_dots.add_theme_constant_override("separation", 12)
+	header.add_child(_chapter_dots)
+
 	# --- Scrollable Card List ---
 	_scroll = ScrollContainer.new()
 	_scroll.set_anchors_preset(PRESET_FULL_RECT)
-	_scroll.offset_top = 135.0
+	_scroll.offset_top = 160.0
 	_scroll.offset_bottom = -10.0
 	_scroll.offset_left = 12.0
 	_scroll.offset_right = -12.0
@@ -289,6 +296,81 @@ func _update_header() -> void:
 			var threshold: int = int(next_info.get("rep_threshold", 0))
 			_status_label.text = "Need %d reputation to continue (have %d)" % [threshold, rep]
 			_status_label.visible = true
+
+	# Chapter dots
+	_update_chapter_dots(rep)
+
+
+func _update_chapter_dots(current_rep: int) -> void:
+	for child: Node in _chapter_dots.get_children():
+		child.queue_free()
+
+	if _campaign == null:
+		return
+
+	var total_chapters: int = _campaign._get_chapter_count()
+	for i: int in total_chapters:
+		var ch_info: Dictionary = _campaign._get_chapter_info(i)
+		var threshold: int = int(ch_info.get("rep_threshold", 0))
+		var is_current: bool = (i == _campaign.current_chapter)
+		var is_completed: bool = (i < _campaign.current_chapter)
+		var is_locked: bool = (i > _campaign.current_chapter) and current_rep < threshold
+
+		var dot := Button.new()
+		dot.flat = true
+		dot.custom_minimum_size = Vector2(20, 20)
+		dot.tooltip_text = ch_info.get("name", "Ch %d" % i)
+
+		var style := StyleBoxFlat.new()
+		style.corner_radius_top_left = 10
+		style.corner_radius_top_right = 10
+		style.corner_radius_bottom_left = 10
+		style.corner_radius_bottom_right = 10
+
+		if is_current:
+			style.bg_color = COLOR_GOLD
+		elif is_completed:
+			style.bg_color = COLOR_WIN
+			var ch_index: int = i
+			dot.pressed.connect(_on_chapter_dot_pressed.bind(ch_index))
+		elif is_locked:
+			style.bg_color = COLOR_DIM
+		else:
+			style.bg_color = COLOR_MUTED
+
+		dot.add_theme_stylebox_override("normal", style)
+		dot.add_theme_stylebox_override("hover", style)
+		dot.add_theme_stylebox_override("pressed", style)
+		dot.add_theme_stylebox_override("focus", style)
+
+		_chapter_dots.add_child(dot)
+
+
+func _on_chapter_dot_pressed(chapter_index: int) -> void:
+	if _campaign == null:
+		return
+	if chapter_index >= _campaign.current_chapter:
+		return
+
+	var ch_info: Dictionary = _campaign._get_chapter_info(chapter_index)
+	_header_chapter_label.text = ch_info.get("name", "Chapter ???")
+	_header_location_label.text = ch_info.get("location", "")
+
+	for child: Node in _card_container.get_children():
+		child.queue_free()
+	_card_buttons.clear()
+
+	var chapter_matches: Array = _campaign._get_chapter_matches(chapter_index)
+	for i: int in chapter_matches.size():
+		var entry: Dictionary = chapter_matches[i]
+		var card: PanelContainer = _create_opponent_card(entry, CardState.WON, i)
+		_card_container.add_child(card)
+
+	var back_btn := Button.new()
+	back_btn.text = "Back to Current Chapter"
+	back_btn.custom_minimum_size = Vector2(0, CARD_TAP_MIN)
+	back_btn.pressed.connect(_refresh_cards)
+	_card_container.add_child(back_btn)
 
 
 func _rebuild_card_list() -> void:
