@@ -46,3 +46,4 @@
 
 <!-- Quick reference linking to full ADRs in docs/architecture/ -->
 - **ADR-0001**: [Core Game Architecture](../../docs/architecture/adr-0001-core-game-architecture.md) — Layered systems, Autoload singletons, signal-driven communication, distributed state, Godot Resources for data (Accepted 2026-03-28)
+- **ADR-0002**: [Audio Architecture](../../docs/architecture/adr-0002-audio-architecture.md) — Three-bus AudioSystem autoload, signal-driven SFX, dual-player crossfade, JSON config, save integration (Accepted 2026-03-29)
