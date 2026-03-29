@@ -49,6 +49,9 @@ var debug_autoplay: bool = false
 ## Debug: second AI for player side in auto-play mode.
 var _player_ai: Node = null
 
+## Debug: fast autoplay mode (reduced timings).
+var _fast_autoplay: bool = false
+
 ## Debug: match counter for auto-play.
 var _autoplay_match_count: int = 0
 
@@ -79,7 +82,8 @@ func _ready() -> void:
 		print("[MATCH] Auto-play mode enabled (CLI)")
 	elif scene_manager != null and scene_manager.autoplay_config.get("enabled", false):
 		debug_autoplay = true
-		print("[MATCH] Auto-play mode enabled (cfg file)")
+		_fast_autoplay = scene_manager.autoplay_config.get("fast", false)
+		print("[MATCH] Auto-play mode enabled (cfg file, fast=%s)" % str(_fast_autoplay))
 	if scene_manager != null:
 		if scene_manager.scene_data.has("opponent_profile_path"):
 			var path: String = scene_manager.scene_data["opponent_profile_path"]
@@ -322,8 +326,14 @@ func _start_ai_turn() -> void:
 	var ai_system: Node = _get_ai_system()
 	var board_rules: Node = _get_board_rules()
 
-	# Wait for think time — fast in scripted mode
-	var think_time: float = 0.3 if _match_type == "scripted" else ai_system.get_think_time()
+	# Wait for think time — fast in scripted/fast-autoplay mode
+	var think_time: float
+	if _match_type == "scripted":
+		think_time = 0.3
+	elif _fast_autoplay:
+		think_time = 0.05
+	else:
+		think_time = ai_system.get_think_time()
 	await get_tree().create_timer(think_time).timeout
 
 	if not _match_active:
@@ -476,18 +486,19 @@ func _show_result(result: Dictionary) -> void:
 
 	# Auto-play: continue after a brief pause
 	if debug_autoplay:
+		var result_delay: float = 0.3 if _fast_autoplay else 2.0
 		if _campaign_mode:
 			# Campaign: auto-return to campaign map
-			print("[MATCH] Auto-returning to campaign map in 2s...")
-			await get_tree().create_timer(2.0).timeout
+			print("[MATCH] Auto-returning to campaign map in %.1fs..." % result_delay)
+			await get_tree().create_timer(result_delay).timeout
 			_on_play_again_pressed()
 		else:
 			# Quick play: restart match (with limit)
 			if _autoplay_max_matches > 0 and _autoplay_match_count >= _autoplay_max_matches:
 				print("[MATCH] === Auto-play complete: %d matches played ===" % _autoplay_match_count)
 				return
-			print("[MATCH] Starting next match in 2s...")
-			await get_tree().create_timer(2.0).timeout
+			print("[MATCH] Starting next match in %.1fs..." % result_delay)
+			await get_tree().create_timer(result_delay).timeout
 			_on_play_again_pressed()
 
 
@@ -532,8 +543,14 @@ func _start_autoplay_turn() -> void:
 
 	var board_rules: Node = _get_board_rules()
 
-	# Short delay so animations can play — faster in scripted mode
-	var delay: float = 0.2 if _match_type == "scripted" else 0.15
+	# Short delay so animations can play — faster in scripted/fast mode
+	var delay: float
+	if _match_type == "scripted":
+		delay = 0.2
+	elif _fast_autoplay:
+		delay = 0.05
+	else:
+		delay = 0.15
 	await get_tree().create_timer(delay).timeout
 
 	if not _match_active:

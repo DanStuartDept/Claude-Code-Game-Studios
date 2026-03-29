@@ -237,8 +237,13 @@ func _dismiss() -> void:
 
 ## Debug: auto-advance dialogue lines with a delay.
 func _autoplay_loop() -> void:
+	var fast: bool = false
+	var sm: Node = get_node_or_null("/root/SceneManager")
+	if sm != null:
+		fast = sm.autoplay_config.get("fast", false)
+	var delay: float = 0.3 if fast else 2.5
 	while is_inside_tree():
-		await get_tree().create_timer(2.5).timeout
+		await get_tree().create_timer(delay).timeout
 		if not is_inside_tree():
 			return
 		_handle_tap()

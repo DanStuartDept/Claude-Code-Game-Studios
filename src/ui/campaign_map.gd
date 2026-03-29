@@ -781,7 +781,8 @@ func _show_reputation_breakdown() -> void:
 	_rep_panel.visible = true
 
 	if _autoplay:
-		await get_tree().create_timer(2.0).timeout
+		var fast: bool = _scene_manager != null and _scene_manager.autoplay_config.get("fast", false)
+		await get_tree().create_timer(0.3 if fast else 2.0).timeout
 		_on_rep_continue()
 
 
@@ -1066,8 +1067,10 @@ func _autoplay_challenge() -> void:
 	if _campaign.state == _campaign.CampaignState.CAMPAIGN_COMPLETE:
 		print("[AUTOPLAY] Campaign complete — stopping")
 		return
-	print("[AUTOPLAY] Auto-challenge in 2s...")
-	await get_tree().create_timer(2.0).timeout
+	var fast: bool = _scene_manager != null and _scene_manager.autoplay_config.get("fast", false)
+	var delay: float = 0.3 if fast else 2.0
+	print("[AUTOPLAY] Auto-challenge in %.1fs..." % delay)
+	await get_tree().create_timer(delay).timeout
 	if _campaign.is_chapter_complete() and _campaign.can_advance_chapter():
 		print("[AUTOPLAY] Advancing chapter")
 		_on_advance_pressed()
