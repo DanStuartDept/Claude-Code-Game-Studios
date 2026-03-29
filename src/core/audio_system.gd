@@ -604,7 +604,7 @@ func _crossfade_music(incoming: AudioStreamPlayer) -> void:
 
 	# Fade in new track
 	var target_db: float = linear_to_db(_bus_volumes.get("music", 0.7))
-	tween.tween_property(incoming, "volume_db", 0.0, _crossfade_duration)
+	tween.tween_property(incoming, "volume_db", target_db, _crossfade_duration)
 
 	tween.set_parallel(false)
 	tween.tween_callback(func() -> void:
