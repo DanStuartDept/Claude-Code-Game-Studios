@@ -89,6 +89,9 @@ extends Resource
 ## King threat indicator color.
 @export var color_king_threat: Color = Color(0.9, 0.2, 0.1, 0.4)
 
+## Capture preview highlight color (marks enemies that will be taken).
+@export var color_capture_preview: Color = Color(0.95, 0.2, 0.1, 0.55)
+
 
 # --- Piece Sizing ---
 

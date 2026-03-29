@@ -98,6 +98,12 @@ var _capture_moves: Array = []
 ## Which legal moves are King escape moves (corner destinations).
 var _king_escape_moves: Array = []
 
+## Map of destination -> Array[Vector2i] of enemy pieces that would be captured.
+var _capture_preview: Dictionary = {}
+
+## Currently hovered legal move destination (for capture preview display).
+var _hovered_cell: Vector2i = Vector2i(-1, -1)
+
 
 # --- Animation State ---
 
@@ -210,6 +216,8 @@ func populate_board() -> void:
 	_match_active = state.match_active
 	_last_move = {}
 	_king_threat_count = 0
+	_capture_preview = {}
+	_hovered_cell = Vector2i(-1, -1)
 	deselect_piece()
 	queue_redraw()
 
@@ -318,9 +326,11 @@ func select_piece(cell: Vector2i) -> void:
 	for dest: Vector2i in destinations:
 		_legal_moves.append(dest)
 
-		# Check if this move would capture (move results in flanking)
-		if _would_capture(cell, dest):
+		# Check if this move would capture and identify victims
+		var victims: Array = _get_capture_victims(cell, dest)
+		if victims.size() > 0:
 			_capture_moves.append(dest)
+			_capture_preview[dest] = victims
 
 		# Check if this is a King escape move (King moving to corner)
 		if piece_type == 3 and _is_corner(dest):  # PieceType.KING == 3
@@ -336,6 +346,8 @@ func deselect_piece() -> void:
 	_legal_moves = []
 	_capture_moves = []
 	_king_escape_moves = []
+	_capture_preview = {}
+	_hovered_cell = Vector2i(-1, -1)
 	_dragging = false
 	_drag_committed = false
 	piece_deselected.emit()
@@ -392,7 +404,7 @@ func _handle_press(pos: Vector2) -> void:
 	_dragging = false
 
 
-## Handle drag motion — update dragged piece position.
+## Handle drag motion — update dragged piece position and hover target.
 func _handle_drag_motion(pos: Vector2) -> void:
 	if not _dragging:
 		return
@@ -404,6 +416,11 @@ func _handle_drag_motion(pos: Vector2) -> void:
 		var distance: float = pos.distance_to(_press_position)
 		if distance >= DRAG_DISTANCE_THRESHOLD:
 			_drag_committed = true
+
+	# Update hovered cell for capture preview
+	var cell: Vector2i = screen_to_cell(pos)
+	if cell != _hovered_cell:
+		_hovered_cell = cell
 
 	queue_redraw()
 
@@ -503,6 +520,7 @@ func _draw() -> void:
 	_draw_grid_lines()
 	_draw_last_move_highlight()
 	_draw_legal_move_highlights()
+	_draw_capture_preview()
 	_draw_selected_highlight()
 	_draw_king_threat_indicator()
 	_draw_pieces()
@@ -598,6 +616,20 @@ func _draw_legal_move_highlights() -> void:
 		if dest not in _capture_moves and dest not in _king_escape_moves:
 			var center: Vector2 = cell_to_screen(dest)
 			draw_circle(center, _cell_size * 0.12, Color(color, 0.7))
+
+
+func _draw_capture_preview() -> void:
+	if not has_selection() or _hovered_cell == Vector2i(-1, -1):
+		return
+	if not _capture_preview.has(_hovered_cell):
+		return
+
+	var victims: Array = _capture_preview[_hovered_cell]
+	for victim_cell: Vector2i in victims:
+		var center: Vector2 = cell_to_screen(victim_cell)
+		var radius: float = _cell_size * 0.45
+		# Draw X marker over threatened enemy
+		draw_circle(center, radius, _config.color_capture_preview)
 
 
 func _draw_selected_highlight() -> void:
@@ -963,13 +995,13 @@ func _is_corner(cell: Vector2i) -> bool:
 	return _tile_types.has(cell) and _tile_types[cell] == 2  # TileType.CORNER
 
 
-## Check if a move from src to dest would result in a capture.
-## Uses a lightweight check: looks for enemy flanked between dest and an ally.
-func _would_capture(src: Vector2i, dest: Vector2i) -> bool:
+## Get the enemy pieces that would be captured by moving from src to dest.
+## Returns Array[Vector2i] of victim cell positions (empty if no captures).
+func _get_capture_victims(src: Vector2i, dest: Vector2i) -> Array:
 	if _board_rules == null:
-		return false
+		return []
 
-	# Determine which pieces are "enemy" based on the moving piece
+	var victims: Array = []
 	var piece_type: int = get_piece_at(src)
 	var is_attacker: bool = (piece_type == 1)
 
@@ -984,21 +1016,17 @@ func _would_capture(src: Vector2i, dest: Vector2i) -> bool:
 		var adj_piece: int = get_piece_at(adj)
 		var beyond_piece: int = get_piece_at(beyond)
 
-		# Skip empty adjacent cells
 		if adj_piece == 0:
 			continue
 
-		# Check if adjacent piece is enemy and beyond piece is friendly
 		if is_attacker:
-			# Attacker captures defenders (not king via normal custodial)
 			if adj_piece == 2 and (beyond_piece == 1 or _board_rules.get_tile_type(beyond) != 0):
-				return true
+				victims.append(adj)
 		else:
-			# Defender captures attackers
 			if adj_piece == 1 and (beyond_piece == 2 or beyond_piece == 3 or _board_rules.get_tile_type(beyond) != 0):
-				return true
+				victims.append(adj)
 
-	return false
+	return victims
 
 
 # ---------------------------------------------------------------------------
