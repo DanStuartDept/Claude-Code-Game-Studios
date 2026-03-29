@@ -1,7 +1,11 @@
 ## Main Menu — Title screen with campaign and quick play options.
 ##
-## See: production/sprints/sprint-02.md (S2-09)
+## See: production/sprints/sprint-02.md (S2-09, S2-16)
 extends Control
+
+
+## All opponent profile paths for Quick Play.
+const OPPONENT_DIR: String = "res://assets/data/opponents/"
 
 
 func _ready() -> void:
@@ -16,8 +20,8 @@ func _ready() -> void:
 	vbox.set_anchors_preset(PRESET_CENTER)
 	vbox.offset_left = -120.0
 	vbox.offset_right = 120.0
-	vbox.offset_top = -140.0
-	vbox.offset_bottom = 140.0
+	vbox.offset_top = -180.0
+	vbox.offset_bottom = 180.0
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 8)
 	add_child(vbox)
@@ -50,15 +54,14 @@ func _ready() -> void:
 	spacer2.custom_minimum_size = Vector2(0, 10)
 	vbox.add_child(spacer2)
 
-	# Quick play section
+	# Quick play section — dynamically list all opponents
 	var quick_label := Label.new()
 	quick_label.text = "Quick Play"
 	quick_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	quick_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.38))
 	vbox.add_child(quick_label)
 
-	_add_opponent_button(vbox, "vs Seanan", "res://assets/data/opponents/seanan.tres")
-	_add_opponent_button(vbox, "vs Brigid", "res://assets/data/opponents/brigid.tres")
+	_populate_opponent_buttons(vbox)
 
 	# Register scenes
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
@@ -67,18 +70,44 @@ func _ready() -> void:
 		scene_manager.register_scene(&"menu", "res://scenes/menu/MainMenu.tscn")
 		scene_manager.register_scene(&"campaign_map", "res://scenes/campaign/CampaignMap.tscn")
 
-	# Auto-play: skip menu and go straight to campaign
+	# Auto-play: skip menu and go straight to match
 	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
 		print("[MENU] Auto-play detected, launching match...")
 		_launch_quick_play("res://assets/data/opponents/seanan.tres")
 
 
-func _add_opponent_button(parent: VBoxContainer, text: String, profile_path: String) -> void:
-	var button := Button.new()
-	button.text = text
-	button.pressed.connect(_launch_quick_play.bind(profile_path))
-	button.custom_minimum_size = Vector2(200, 40)
-	parent.add_child(button)
+## Scan opponent directory and create a button for each profile.
+func _populate_opponent_buttons(parent: VBoxContainer) -> void:
+	var dir := DirAccess.open(OPPONENT_DIR)
+	if dir == null:
+		return
+
+	# Collect and sort profiles by difficulty
+	var profiles: Array[Dictionary] = []
+	dir.list_dir_begin()
+	var file_name: String = dir.get_next()
+	while file_name != "":
+		if file_name.ends_with(".tres"):
+			var path: String = OPPONENT_DIR + file_name
+			var profile: Resource = load(path)
+			if profile != null:
+				profiles.append({
+					"path": path,
+					"name": profile.character_name,
+					"difficulty": profile.difficulty,
+				})
+		file_name = dir.get_next()
+	dir.list_dir_end()
+
+	profiles.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return a.difficulty < b.difficulty)
+
+	for p: Dictionary in profiles:
+		var button := Button.new()
+		button.text = "vs %s" % p.name
+		button.pressed.connect(_launch_quick_play.bind(p.path))
+		button.custom_minimum_size = Vector2(200, 36)
+		parent.add_child(button)
 
 
 func _on_campaign_pressed() -> void:
