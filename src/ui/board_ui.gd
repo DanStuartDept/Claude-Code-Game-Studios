@@ -105,6 +105,15 @@ var _capture_preview: Dictionary = {}
 var _hovered_cell: Vector2i = Vector2i(-1, -1)
 
 
+# --- Tutorial Constraints ---
+
+## If non-empty, only these piece positions can be selected.
+var tutorial_allowed_pieces: Array = []
+
+## If non-empty, override legal moves with these forced destinations.
+var tutorial_forced_highlights: Array = []
+
+
 # --- Animation State ---
 
 ## Whether animation is in progress (blocks input).
@@ -316,13 +325,23 @@ func select_piece(cell: Vector2i) -> void:
 	if not _is_player_piece(piece_type):
 		return
 
+	# Tutorial constraint: only allowed pieces can be selected
+	if tutorial_allowed_pieces.size() > 0 and cell not in tutorial_allowed_pieces:
+		return
+
 	_selected_cell = cell
 	_legal_moves = []
 	_capture_moves = []
 	_king_escape_moves = []
 
-	# Get legal destinations
-	var destinations: Array = _board_rules.get_legal_moves(cell)
+	# Get legal destinations (tutorial may override)
+	var destinations: Array = []
+	if tutorial_forced_highlights.size() > 0:
+		# Use forced highlights instead of computed legal moves
+		destinations = tutorial_forced_highlights.duplicate()
+	else:
+		destinations = _board_rules.get_legal_moves(cell)
+
 	for dest: Vector2i in destinations:
 		_legal_moves.append(dest)
 
@@ -337,6 +356,27 @@ func select_piece(cell: Vector2i) -> void:
 			_king_escape_moves.append(dest)
 
 	piece_selected.emit(cell)
+	queue_redraw()
+
+
+## Set tutorial constraints: which pieces can be selected and which moves are forced.
+##
+## Usage:
+##   board_ui.set_tutorial_constraints([Vector2i(3,1)], [Vector2i(1,1)])
+func set_tutorial_constraints(allowed_pieces: Array, forced_highlights: Array) -> void:
+	tutorial_allowed_pieces = allowed_pieces
+	tutorial_forced_highlights = forced_highlights
+	deselect_piece()
+	queue_redraw()
+
+
+## Remove all tutorial constraints, restoring normal input.
+##
+## Usage:
+##   board_ui.clear_tutorial_constraints()
+func clear_tutorial_constraints() -> void:
+	tutorial_allowed_pieces = []
+	tutorial_forced_highlights = []
 	queue_redraw()
 
 
@@ -665,7 +705,12 @@ func _draw_pieces() -> void:
 		var piece_type: int = _pieces[cell]
 		var center: Vector2 = cell_to_screen(cell)
 
-		_draw_piece_at(piece_type, center, 1.0)
+		# Dim non-allowed pieces during tutorial
+		var alpha: float = 1.0
+		if tutorial_allowed_pieces.size() > 0 and cell not in tutorial_allowed_pieces:
+			alpha = 0.3
+
+		_draw_piece_at(piece_type, center, alpha)
 
 
 func _draw_animated_pieces() -> void:
