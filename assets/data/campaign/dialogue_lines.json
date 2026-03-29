@@ -306,5 +306,61 @@
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
     "text": "You came back. That is the first thing I needed to know about you."
+  },
+  {
+    "id": "seanan_post_win_retry",
+    "opponent_id": "seanan",
+    "timing": "post_win",
+    "encounter": null,
+    "result_history": "lost_to_them",
+    "feud_state": null,
+    "reputation_tier": null,
+    "is_chapter_boss": null,
+    "is_final_boss": null,
+    "match_type": "standard",
+    "speaker": "Séanán na Farraige",
+    "text": "You came back quieter than you left, and you played quieter too. That is how the sea teaches — not with words."
+  },
+  {
+    "id": "brigid_post_win_retry",
+    "opponent_id": "brigid",
+    "timing": "post_win",
+    "encounter": null,
+    "result_history": "lost_to_them",
+    "feud_state": null,
+    "reputation_tier": null,
+    "is_chapter_boss": null,
+    "is_final_boss": null,
+    "match_type": "standard",
+    "speaker": "Brigid na Scailpe",
+    "text": "You held the thing you learned and did not let the losing spoil it. That is the harder discipline, and you had it."
+  },
+  {
+    "id": "tadhg_post_win_retry",
+    "opponent_id": "tadhg",
+    "timing": "post_win",
+    "encounter": null,
+    "result_history": "lost_to_them",
+    "feud_state": null,
+    "reputation_tier": null,
+    "is_chapter_boss": null,
+    "is_final_boss": null,
+    "match_type": "standard",
+    "speaker": "Tadhg an Ósta",
+    "text": "All right, all right — you came back and you came back better, I will give you that much and not a word more."
+  },
+  {
+    "id": "fiachra_post_win_retry",
+    "opponent_id": "fiachra",
+    "timing": "post_win",
+    "encounter": null,
+    "result_history": "lost_to_them",
+    "feud_state": null,
+    "reputation_tier": null,
+    "is_chapter_boss": true,
+    "is_final_boss": null,
+    "match_type": "standard",
+    "speaker": "Fiachra an Fhánaí",
+    "text": "The second thing I needed to know about you — you came back and you won. The road east is yours."
   }
 ]

@@ -301,18 +301,20 @@ func _launch_match() -> void:
 
 ## Called when returning from a match with a result.
 func _handle_match_return() -> void:
-	# Process through campaign system
-	_campaign.process_match_result(_match_result)
-
 	var winner: int = _match_result.get("winner", -1)
 	var player_won: bool = (winner == 1)  # Side.DEFENDER
 
-	# Show post-match dialogue
+	# Build dialogue context BEFORE processing result, so encounter count
+	# and result_history reflect the state the player experienced the match in.
 	var timing: String = "post_win" if player_won else "post_loss"
-	var context: Dictionary = _campaign.build_dialogue_context(timing)
+	var pre_process_context: Dictionary = _campaign.build_dialogue_context(timing)
 
+	# Now process the result (updates match history, awards reputation, advances)
+	_campaign.process_match_result(_match_result)
+
+	# Show post-match dialogue using pre-process context
 	if _dialogue != null:
-		var lines: Array = _dialogue.show_dialogue(context)
+		var lines: Array = _dialogue.show_dialogue(pre_process_context)
 		if not lines.is_empty():
 			var overlay: Control = _create_dialogue_overlay()
 			add_child(overlay)
