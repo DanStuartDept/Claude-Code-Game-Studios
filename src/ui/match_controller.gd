@@ -252,6 +252,17 @@ func _start_match() -> void:
 
 	_match_active = true
 
+	# Tutorial mode: delegate to TutorialSystem
+	if _match_type == "tutorial":
+		var tutorial: Node = get_node_or_null("/root/TutorialSystem")
+		if tutorial != null:
+			tutorial.tutorial_complete.connect(_on_tutorial_complete, CONNECT_ONE_SHOT)
+			tutorial.activate(board_rules, _board_ui)
+			_turn_label.text = ""
+			return
+		else:
+			push_warning("MatchController: TutorialSystem not found, falling back to standard match")
+
 	# Scripted mode: show "Watching..." instead of turn info
 	if is_scripted:
 		_turn_label.text = "Watching..."
@@ -337,6 +348,32 @@ func _update_move_count() -> void:
 # ---------------------------------------------------------------------------
 # Match End
 # ---------------------------------------------------------------------------
+
+func _on_tutorial_complete() -> void:
+	_match_active = false
+	var board_rules: Node = _get_board_rules()
+
+	# Tutorial ends with King escape — build a win result
+	_last_match_result = {
+		"winner": 1,  # Side.DEFENDER (player wins tutorial)
+		"reason": board_rules.WinReason.KING_ESCAPED,
+		"move_count": board_rules.get_move_count(),
+		"pieces_remaining": {
+			"attacker": board_rules.get_piece_count(board_rules.Side.ATTACKER),
+			"defender": board_rules.get_piece_count(board_rules.Side.DEFENDER),
+		},
+	}
+
+	_turn_label.text = ""
+
+	# Brief pause, then return to campaign
+	await get_tree().create_timer(1.5).timeout
+
+	if _campaign_mode:
+		_return_to_campaign()
+	else:
+		_show_result(_last_match_result)
+
 
 func _on_match_ended(result: Dictionary) -> void:
 	_match_active = false

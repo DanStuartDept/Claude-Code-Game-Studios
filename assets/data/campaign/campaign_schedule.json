@@ -33,9 +33,18 @@
   ],
   "matches": [
     {
-      "matchId": "ch0_scripted",
+      "matchId": "ch0_tutorial",
       "chapter": 0,
       "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/murchadh.tres",
+      "matchType": "tutorial",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch0_scripted",
+      "chapter": 0,
+      "orderInChapter": 1,
       "opponentPath": "res://assets/data/opponents/murchadh.tres",
       "matchType": "scripted",
       "isChapterBoss": false,
