@@ -9,4 +9,5 @@ character_name = "Tadhg an Ósta"
 character_id = "tadhg"
 difficulty = 2
 personality = ExtResource("2")
+feud_tendency = 0.8
 description = "The innkeeper plays to attack — bold, direct, and impatient"

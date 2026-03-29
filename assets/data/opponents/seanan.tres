@@ -9,4 +9,5 @@ character_name = "Séanán na Farraige"
 character_id = "seanan"
 difficulty = 1
 personality = ExtResource("2")
+feud_tendency = 0.1
 description = "Plays by feel, flashes of accidental brilliance"

@@ -9,4 +9,5 @@ character_name = "Brigid of the Hearth"
 character_id = "brigid"
 difficulty = 2
 personality = ExtResource("2")
+feud_tendency = 0.2
 description = "Patient and cautious, protects the King with unwavering discipline"

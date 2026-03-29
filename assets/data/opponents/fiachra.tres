@@ -9,4 +9,5 @@ character_name = "Fiachra an Fhánaí"
 character_id = "fiachra"
 difficulty = 3
 personality = ExtResource("2")
+feud_tendency = 0.4
 description = "The wanderer reads the board like a map — patient and positional"
