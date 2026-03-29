@@ -68,6 +68,7 @@ var _scene_manager: Node = null
 var _match_result: Dictionary = {}
 var _autoplay: bool = false
 var _card_buttons: Array = []
+var _animate_rep_bar: bool = false
 
 
 # ---------------------------------------------------------------------------
@@ -261,7 +262,12 @@ func _update_header() -> void:
 	if next_threshold > 0:
 		_header_rep_bar.min_value = prev_threshold
 		_header_rep_bar.max_value = next_threshold
-		_header_rep_bar.value = rep
+		if _animate_rep_bar and _header_rep_bar.value != rep:
+			var tween: Tween = create_tween()
+			tween.tween_property(_header_rep_bar, "value", float(rep), 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+			_animate_rep_bar = false
+		else:
+			_header_rep_bar.value = rep
 		_header_rep_label.text = "%d / %d" % [rep, next_threshold]
 	else:
 		_header_rep_bar.min_value = 0
@@ -668,6 +674,7 @@ func _show_reputation_breakdown() -> void:
 
 func _on_rep_continue() -> void:
 	_rep_panel.visible = false
+	_animate_rep_bar = true
 	_on_post_dialogue_complete()
 
 
