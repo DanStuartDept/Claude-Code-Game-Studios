@@ -530,7 +530,28 @@ func _create_opponent_card(entry: Dictionary, state: CardState, index: int) -> P
 		boss_label.add_theme_color_override("font_color", COLOR_GOLD if state != CardState.UPCOMING else COLOR_DIM)
 		text_col.add_child(boss_label)
 
-	# Make tappable cards interactive
+	# Match summary for completed cards
+	if state == CardState.WON or state == CardState.LOST_THEN_WON or state == CardState.FEUD_RESOLVED:
+		var opponent_id: String = profile.character_id if profile != null else ""
+		if opponent_id != "" and _campaign.match_history.has(opponent_id):
+			var records: Array = _campaign.match_history[opponent_id]
+			var wins: int = 0
+			var losses: int = 0
+			for rec: Dictionary in records:
+				if rec.get("result", "") == "win":
+					wins += 1
+				elif rec.get("result", "") == "loss":
+					losses += 1
+			var summary_label := Label.new()
+			summary_label.add_theme_font_size_override("font_size", 11)
+			summary_label.add_theme_color_override("font_color", COLOR_MUTED)
+			if losses > 0:
+				summary_label.text = "Record: %dW – %dL" % [wins, losses]
+			else:
+				summary_label.text = "Won on first attempt"
+			text_col.add_child(summary_label)
+
+	# Make active/feud/nemesis cards tappable (starts match)
 	if state == CardState.ACTIVE or state == CardState.FEUD or state == CardState.NEMESIS:
 		var btn := Button.new()
 		btn.flat = true
