@@ -869,10 +869,10 @@ func _create_dialogue_overlay() -> Control:
 func _on_settings_pressed() -> void:
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(PRESET_CENTER)
-	panel.offset_left = -150.0
-	panel.offset_right = 150.0
-	panel.offset_top = -120.0
-	panel.offset_bottom = 120.0
+	panel.offset_left = -160.0
+	panel.offset_right = 160.0
+	panel.offset_top = -200.0
+	panel.offset_bottom = 200.0
 	add_child(panel)
 
 	var vbox := VBoxContainer.new()
@@ -887,6 +887,13 @@ func _on_settings_pressed() -> void:
 	title.add_theme_color_override("font_color", COLOR_GOLD)
 	vbox.add_child(title)
 
+	# Volume sliders
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	_add_volume_slider(vbox, "Master", "master", audio)
+	_add_volume_slider(vbox, "Music", "music", audio)
+	_add_volume_slider(vbox, "SFX", "sfx", audio)
+	_add_volume_slider(vbox, "Ambient", "ambient", audio)
+
 	var text_speed_btn := Button.new()
 	text_speed_btn.text = "Text Speed: Instant"
 	text_speed_btn.pressed.connect(func() -> void:
@@ -895,12 +902,6 @@ func _on_settings_pressed() -> void:
 		else:
 			text_speed_btn.text = "Text Speed: Instant")
 	vbox.add_child(text_speed_btn)
-
-	var sound_label := Label.new()
-	sound_label.text = "Sound: Coming Soon"
-	sound_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sound_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.38))
-	vbox.add_child(sound_label)
 
 	var new_game_btn := Button.new()
 	new_game_btn.text = "New Game"
@@ -911,8 +912,52 @@ func _on_settings_pressed() -> void:
 
 	var close_btn := Button.new()
 	close_btn.text = "Close"
-	close_btn.pressed.connect(func() -> void: panel.queue_free())
+	close_btn.pressed.connect(func() -> void:
+		panel.queue_free()
+		# Persist audio settings on close
+		var save: Node = get_node_or_null("/root/SaveSystem")
+		if save != null:
+			save.save_game()
+	)
 	vbox.add_child(close_btn)
+
+
+func _add_volume_slider(parent: VBoxContainer, label_text: String, bus_name: String, audio: Node) -> void:
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+	parent.add_child(hbox)
+
+	var label := Label.new()
+	label.text = label_text
+	label.custom_minimum_size = Vector2(60, 0)
+	label.add_theme_color_override("font_color", COLOR_TEXT)
+	label.add_theme_font_size_override("font_size", 14)
+	hbox.add_child(label)
+
+	var slider := HSlider.new()
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.05
+	slider.custom_minimum_size = Vector2(120, 20)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	if bus_name == "master":
+		var master_idx: int = AudioServer.get_bus_index(&"Master")
+		slider.value = db_to_linear(AudioServer.get_bus_volume_db(master_idx)) if master_idx >= 0 else 1.0
+	elif audio != null:
+		slider.value = audio.get_bus_volume(bus_name)
+	else:
+		slider.value = 1.0
+
+	slider.value_changed.connect(func(val: float) -> void:
+		if bus_name == "master":
+			var idx: int = AudioServer.get_bus_index(&"Master")
+			if idx >= 0:
+				AudioServer.set_bus_volume_db(idx, linear_to_db(val))
+		elif audio != null:
+			audio.set_bus_volume(bus_name, val)
+	)
+	hbox.add_child(slider)
 
 
 func _confirm_new_game() -> void:
