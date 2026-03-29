@@ -364,8 +364,8 @@ func _handle_tap(cell: Vector2i) -> void:
 		return
 
 	# No selection — try to select tapped piece
-	var piece_type: int = get_piece_at(cell)
-	if piece_type != 0 and _is_player_piece(piece_type):
+	var tapped_piece: int = get_piece_at(cell)
+	if tapped_piece != 0 and _is_player_piece(tapped_piece):
 		select_piece(cell)
 
 
@@ -757,16 +757,19 @@ func _connect_signals() -> void:
 	if _board_rules == null:
 		return
 
-	if _board_rules.has_signal("piece_moved"):
-		_board_rules.piece_moved.connect(_on_piece_moved)
-	if _board_rules.has_signal("piece_captured"):
-		_board_rules.piece_captured.connect(_on_piece_captured)
-	if _board_rules.has_signal("turn_changed"):
-		_board_rules.turn_changed.connect(_on_turn_changed)
-	if _board_rules.has_signal("match_ended"):
-		_board_rules.match_ended.connect(_on_match_ended)
-	if _board_rules.has_signal("king_threatened"):
-		_board_rules.king_threatened.connect(_on_king_threatened)
+	_safe_connect("piece_moved", _on_piece_moved)
+	_safe_connect("piece_captured", _on_piece_captured)
+	_safe_connect("turn_changed", _on_turn_changed)
+	_safe_connect("match_ended", _on_match_ended)
+	_safe_connect("king_threatened", _on_king_threatened)
+
+
+## Connect to a signal only if not already connected.
+func _safe_connect(signal_name: String, callable: Callable) -> void:
+	if _board_rules.has_signal(signal_name):
+		var sig: Signal = Signal(_board_rules, signal_name)
+		if not sig.is_connected(callable):
+			sig.connect(callable)
 
 
 func _on_piece_moved(piece_type: int, from_pos: Vector2i, to_pos: Vector2i) -> void:
@@ -785,9 +788,9 @@ func _on_piece_moved(piece_type: int, from_pos: Vector2i, to_pos: Vector2i) -> v
 	_animate_move(piece_type, from_pos, to_pos)
 
 
-func _on_piece_captured(piece_type: int, position: Vector2i, _captured_by: Vector2i) -> void:
+func _on_piece_captured(piece_type: int, cap_pos: Vector2i, _captured_by: Vector2i) -> void:
 	# Queue capture for sequential animation after move completes
-	_capture_queue.append({ "piece_type": piece_type, "position": position })
+	_capture_queue.append({ "piece_type": piece_type, "position": cap_pos })
 
 
 func _on_turn_changed(new_active_side: int) -> void:

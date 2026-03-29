@@ -52,11 +52,21 @@ func _ready() -> void:
 		scene_manager.register_scene(&"match", "res://scenes/match/Match.tscn")
 		scene_manager.register_scene(&"menu", "res://scenes/menu/MainMenu.tscn")
 
+	# Auto-play: skip menu and go straight to match
+	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
+		print("[MENU] Auto-play detected, launching match...")
+		_on_play_pressed()
+
 
 func _on_play_pressed() -> void:
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
 	if scene_manager != null:
+		# Hide immediately — SceneManager loads Match into its own SceneRoot,
+		# but Godot's main scene (this node) stays in the tree as a root child.
+		# We must remove ourselves so we don't sit on top of the Match scene.
+		visible = false
 		scene_manager.change_scene(&"match")
+		queue_free()
 	else:
 		# Fallback: load match scene directly
 		get_tree().change_scene_to_file("res://scenes/match/Match.tscn")

@@ -42,12 +42,30 @@ var _move_count_label: Label = null
 var _match_active: bool = false
 var _ai_thinking: bool = false
 
+## Debug: auto-play mode — both sides controlled by AI.
+## Set to true via command line: --autoplay, or toggle in code.
+var debug_autoplay: bool = false
+
+## Debug: second AI for player side in auto-play mode.
+var _player_ai: Node = null
+
+## Debug: match counter for auto-play.
+var _autoplay_match_count: int = 0
+
+## Debug: total matches to auto-play (0 = infinite).
+var _autoplay_max_matches: int = 3
+
 
 # ---------------------------------------------------------------------------
 # Lifecycle
 # ---------------------------------------------------------------------------
 
 func _ready() -> void:
+	# Check for --autoplay command line flag
+	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
+		debug_autoplay = true
+		print("[MATCH] Auto-play mode enabled")
+
 	_build_ui()
 	_start_match()
 
@@ -155,13 +173,32 @@ func _start_match() -> void:
 	# Start the match
 	board_rules.start_match(board_rules.MatchMode.STANDARD, player_side)
 
-	# Configure AI
+	if debug_autoplay:
+		_autoplay_match_count += 1
+		print("[MATCH] === Starting match #%d ===" % _autoplay_match_count)
+		print("[MATCH] Player side: %s | AI side: %s" % [
+			"DEFENDER" if player_side == 1 else "ATTACKER",
+			"ATTACKER" if _ai_side == 0 else "DEFENDER"])
+
+	# Configure AI (opponent)
 	if opponent_profile != null:
 		ai_system.configure(board_rules, _ai_side)
 		opponent_profile.apply_to(ai_system)
 	else:
 		# Default: difficulty 1, erratic personality
 		ai_system.configure(board_rules, _ai_side, 1, ai_system.Personality.ERRATIC)
+
+	# Configure second AI for auto-play (player side)
+	if debug_autoplay:
+		if _player_ai == null:
+			var AISystemScript: GDScript = preload("res://src/core/ai_system.gd")
+			_player_ai = AISystemScript.new()
+			_player_ai.name = "PlayerAI"
+			add_child(_player_ai)
+		_player_ai.configure(board_rules, player_side, 2, _player_ai.Personality.BALANCED)
+		_player_ai._mistake_chance = 0.15
+		print("[MATCH] Player AI: difficulty 2, Balanced")
+		print("[MATCH] Opponent AI: difficulty 1, Erratic")
 
 	# Configure Board UI
 	var config: Resource = null
@@ -173,12 +210,23 @@ func _start_match() -> void:
 	board_rules.turn_changed.connect(_on_turn_changed)
 	board_rules.match_ended.connect(_on_match_ended)
 
+	# Debug logging for signals
+	if debug_autoplay:
+		if not board_rules.piece_moved.is_connected(_debug_on_piece_moved):
+			board_rules.piece_moved.connect(_debug_on_piece_moved)
+		if not board_rules.piece_captured.is_connected(_debug_on_piece_captured):
+			board_rules.piece_captured.connect(_debug_on_piece_captured)
+		if not board_rules.king_threatened.is_connected(_debug_on_king_threatened):
+			board_rules.king_threatened.connect(_debug_on_king_threatened)
+
 	_match_active = true
 	_update_turn_display()
 
 	# If AI goes first (player is defender, attacker starts)
 	if board_rules.get_active_side() == _ai_side:
 		_start_ai_turn()
+	elif debug_autoplay:
+		_start_autoplay_turn()
 
 
 # ---------------------------------------------------------------------------
@@ -189,8 +237,13 @@ func _on_turn_changed(new_active_side: int) -> void:
 	_update_turn_display()
 	_update_move_count()
 
-	if new_active_side == _ai_side and _match_active:
+	if not _match_active:
+		return
+
+	if new_active_side == _ai_side:
 		_start_ai_turn()
+	elif debug_autoplay:
+		_start_autoplay_turn()
 
 
 func _start_ai_turn() -> void:
@@ -218,7 +271,13 @@ func _start_ai_turn() -> void:
 	_ai_thinking_label.visible = false
 
 	if not move.is_empty():
+		if debug_autoplay:
+			var side_name: String = "ATTACKER" if _ai_side == 0 else "DEFENDER"
+			print("[MOVE] %s (opponent-ai): %s -> %s" % [side_name, move.from, move.to])
 		board_rules.submit_move(move.from, move.to)
+	else:
+		if debug_autoplay:
+			print("[MATCH] Opponent AI has no legal moves!")
 
 
 func _update_turn_display() -> void:
@@ -261,6 +320,18 @@ func _show_result(result: Dictionary) -> void:
 	var reason: int = result["reason"]
 	var move_count: int = result["move_count"]
 
+	var winner_name: String = "DEFENDER" if winner == 1 else "ATTACKER"
+	var reason_names: Array = ["NONE", "KING_ESCAPED", "KING_CAPTURED", "NO_LEGAL_MOVES"]
+	var reason_name: String = reason_names[reason] if reason < reason_names.size() else "UNKNOWN"
+
+	if debug_autoplay:
+		print("[MATCH] === Match #%d Result ===" % _autoplay_match_count)
+		print("[MATCH] Winner: %s | Reason: %s | Moves: %d" % [winner_name, reason_name, move_count])
+		if result.has("pieces_remaining"):
+			var remaining: Dictionary = result["pieces_remaining"]
+			print("[MATCH] Pieces remaining — Attacker: %d, Defender: %d" % [
+				remaining["attacker"], remaining["defender"]])
+
 	var text: String = ""
 
 	if winner == player_side:
@@ -283,6 +354,15 @@ func _show_result(result: Dictionary) -> void:
 	_result_panel.visible = true
 	_turn_label.text = "Match over"
 
+	# Auto-play: start next match after a brief pause
+	if debug_autoplay:
+		if _autoplay_max_matches > 0 and _autoplay_match_count >= _autoplay_max_matches:
+			print("[MATCH] === Auto-play complete: %d matches played ===" % _autoplay_match_count)
+			return
+		print("[MATCH] Starting next match in 2s...")
+		await get_tree().create_timer(2.0).timeout
+		_on_play_again_pressed()
+
 
 func _on_play_again_pressed() -> void:
 	_result_panel.visible = false
@@ -295,6 +375,52 @@ func _on_play_again_pressed() -> void:
 		board_rules.match_ended.disconnect(_on_match_ended)
 
 	_start_match()
+
+
+# ---------------------------------------------------------------------------
+# Debug: Auto-play
+# ---------------------------------------------------------------------------
+
+## Auto-play the player's turn using a second AI.
+func _start_autoplay_turn() -> void:
+	if _player_ai == null or not _match_active:
+		return
+
+	_turn_label.text = "Auto-playing..."
+
+	var board_rules: Node = _get_board_rules()
+
+	# Short delay so animations can play
+	await get_tree().create_timer(0.15).timeout
+
+	if not _match_active:
+		return
+
+	if _board_ui.is_animating():
+		await _board_ui.animations_finished
+
+	var move: Dictionary = _player_ai.select_move()
+
+	if not move.is_empty():
+		var side_name: String = "DEFENDER" if player_side == 1 else "ATTACKER"
+		print("[MOVE] %s (player-ai): %s -> %s" % [side_name, move.from, move.to])
+		board_rules.submit_move(move.from, move.to)
+	else:
+		print("[MATCH] Player AI has no legal moves!")
+
+
+func _debug_on_piece_moved(piece_type: int, from_pos: Vector2i, to_pos: Vector2i) -> void:
+	var type_name: String = ["NONE", "ATTACKER", "DEFENDER", "KING"][piece_type]
+	print("[MOVE] %s moved: %s -> %s" % [type_name, from_pos, to_pos])
+
+
+func _debug_on_piece_captured(piece_type: int, position: Vector2i, captured_by: Vector2i) -> void:
+	var type_name: String = ["NONE", "ATTACKER", "DEFENDER", "KING"][piece_type]
+	print("[CAPTURE] %s captured at %s (by move to %s)" % [type_name, position, captured_by])
+
+
+func _debug_on_king_threatened(king_pos: Vector2i, threat_count: int) -> void:
+	print("[THREAT] King at %s threatened by %d attackers!" % [king_pos, threat_count])
 
 
 # ---------------------------------------------------------------------------
