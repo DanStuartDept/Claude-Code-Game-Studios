@@ -189,12 +189,14 @@ func _find_matching_lines(context: Dictionary) -> Array:
 
 
 ## Compare two tag values, handling type differences from JSON.
+## JSON booleans may arrive as strings ("true"/"false") while context
+## passes native bools, so we normalize to strings for comparison.
 func _values_match(line_val: Variant, context_val: Variant) -> bool:
-	# Direct match
-	if line_val == context_val:
-		return true
+	# Same type — direct comparison is safe
+	if typeof(line_val) == typeof(context_val):
+		return line_val == context_val
 
-	# String comparison
+	# Different types — normalize to lowercase strings
 	var line_str: String = str(line_val).to_lower()
 	var ctx_str: String = str(context_val).to_lower()
 	return line_str == ctx_str
