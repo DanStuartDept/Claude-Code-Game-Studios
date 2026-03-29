@@ -498,7 +498,7 @@ func _load_schedule() -> void:
 	# Parse match entries
 	_matches = []
 	for m: Dictionary in data.get("matches", []):
-		_matches.append({
+		var entry: Dictionary = {
 			"match_id": m.get("matchId", ""),
 			"chapter": int(m.get("chapter", 0)),
 			"order_in_chapter": int(m.get("orderInChapter", 0)),
@@ -506,7 +506,10 @@ func _load_schedule() -> void:
 			"match_type": m.get("matchType", "standard"),
 			"is_chapter_boss": m.get("isChapterBoss", false),
 			"is_final_boss": m.get("isFinalBoss", false),
-		})
+		}
+		if m.has("difficultyOverride"):
+			entry["difficulty_override"] = int(m["difficultyOverride"])
+		_matches.append(entry)
 
 
 func _award_reputation(result: Dictionary, entry: Dictionary, opponent_id: String) -> void:

@@ -85,6 +85,107 @@
       "matchType": "standard",
       "isChapterBoss": true,
       "isFinalBoss": false
+    },
+    {
+      "matchId": "ch2_match1",
+      "chapter": 2,
+      "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/orlaith.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch2_match2",
+      "chapter": 2,
+      "orderInChapter": 1,
+      "opponentPath": "res://assets/data/opponents/diarmait.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch2_match3",
+      "chapter": 2,
+      "orderInChapter": 2,
+      "opponentPath": "res://assets/data/opponents/caoimhe.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch2_boss",
+      "chapter": 2,
+      "orderInChapter": 3,
+      "opponentPath": "res://assets/data/opponents/conchobar.tres",
+      "matchType": "standard",
+      "isChapterBoss": true,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch3_match1",
+      "chapter": 3,
+      "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/eithne.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch3_match2",
+      "chapter": 3,
+      "orderInChapter": 1,
+      "opponentPath": "res://assets/data/opponents/ruairi.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch3_rematch",
+      "chapter": 3,
+      "orderInChapter": 2,
+      "opponentPath": "res://assets/data/opponents/conchobar.tres",
+      "matchType": "rematch",
+      "isChapterBoss": false,
+      "isFinalBoss": false,
+      "difficultyOverride": 6
+    },
+    {
+      "matchId": "ch3_boss",
+      "chapter": 3,
+      "orderInChapter": 3,
+      "opponentPath": "res://assets/data/opponents/niall.tres",
+      "matchType": "standard",
+      "isChapterBoss": true,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch4_match1",
+      "chapter": 4,
+      "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/caoimhe.tres",
+      "matchType": "rematch",
+      "isChapterBoss": false,
+      "isFinalBoss": false,
+      "difficultyOverride": 6
+    },
+    {
+      "matchId": "ch4_match2",
+      "chapter": 4,
+      "orderInChapter": 1,
+      "opponentPath": "res://assets/data/opponents/saoirse.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch4_final",
+      "chapter": 4,
+      "orderInChapter": 2,
+      "opponentPath": "res://assets/data/opponents/murchadh.tres",
+      "matchType": "standard",
+      "isChapterBoss": true,
+      "isFinalBoss": true
     }
   ]
 }
