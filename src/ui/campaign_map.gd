@@ -677,10 +677,11 @@ func _on_advance_pressed() -> void:
 		return
 
 	if _campaign.is_chapter_complete() and _campaign.can_advance_chapter():
+		var old_ch: int = _campaign.current_chapter
 		_campaign.advance_chapter()
 		_refresh_cards()
-		if _campaign.current_chapter == 1:
-			_show_narrator("narrator_ch1_start")
+		var start_id: String = "narrator_ch%d_start" % _campaign.current_chapter
+		_show_narrator(start_id)
 
 
 # ---------------------------------------------------------------------------
@@ -782,9 +783,12 @@ func _on_rep_continue() -> void:
 
 
 func _on_post_dialogue_complete() -> void:
-	if _campaign.is_chapter_complete() and _campaign.current_chapter == 0:
+	if _campaign.is_chapter_complete():
+		var end_id: String = "narrator_ch%d_end" % _campaign.current_chapter
+		if _campaign.current_chapter == 0:
+			end_id = "narrator_ch0_post_scripted"
 		if _campaign.can_advance_chapter():
-			_show_narrator_then_advance("narrator_ch0_post_scripted")
+			_show_narrator_then_advance(end_id)
 			return
 
 	_refresh_cards()
