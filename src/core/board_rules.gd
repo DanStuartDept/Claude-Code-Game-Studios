@@ -36,7 +36,12 @@ signal match_ended(result: Dictionary)
 signal king_threatened(king_pos: Vector2i, threat_count: int)
 
 
-# --- Board Configuration (data-driven, overridable by BoardLayout Resource in S1-02) ---
+# --- Board Configuration (loaded from BoardLayout Resource) ---
+
+## The active BoardLayout resource. Set this before calling start_match().
+## If null, the engine falls back to compiled-in defaults (for backward compatibility
+## with tests that don't load a .tres file).
+var layout: Resource = null
 
 ## Width and height of the board grid.
 var board_size: int = 7
@@ -110,12 +115,37 @@ func _init_grid() -> void:
 		_grid.append(row_data)
 
 
+# --- Public API: Layout ---
+
+## Apply a BoardLayout resource to configure the board. Call before start_match().
+## All layout fields are copied into the engine's working variables.
+##
+## Usage:
+##   var layout := load("res://assets/data/board/default_layout.tres")
+##   board_rules.apply_layout(layout)
+##   board_rules.start_match()
+func apply_layout(p_layout: Resource) -> void:
+	layout = p_layout
+	board_size = p_layout.board_size
+	throne_pos = p_layout.throne_pos
+	corner_positions = p_layout.corner_positions.duplicate()
+	attacker_start_positions = p_layout.attacker_start_positions.duplicate()
+	defender_start_positions = p_layout.defender_start_positions.duplicate()
+	king_start_pos = p_layout.king_start_pos
+	king_threatened_threshold = p_layout.king_threatened_threshold
+	king_capture_sides = p_layout.king_capture_sides
+
+
 # --- Public API: Match Control ---
 
 ## Start a new match. Clears the board, places pieces, and sets the active side.
+## If a layout resource is assigned, it is applied before setup.
 ## In SCRIPTED mode, the board is set up but no turns are processed —
 ## call resolve_scripted_match() to emit the predetermined result.
 func start_match(mode: int = MatchMode.STANDARD, player_side: int = Side.DEFENDER) -> void:
+	if layout != null:
+		apply_layout(layout)
+
 	_match_mode = mode
 	_player_side = player_side
 	_active_side = Side.ATTACKER

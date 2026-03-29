@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BoardLayout" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/board_layout.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+board_size = 7
+throne_pos = Vector2i(3, 3)
+corner_positions = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 6), Vector2i(6, 0), Vector2i(6, 6)])
+attacker_start_positions = Array[Vector2i]([Vector2i(0, 2), Vector2i(0, 3), Vector2i(0, 4), Vector2i(1, 3), Vector2i(2, 0), Vector2i(2, 6), Vector2i(3, 0), Vector2i(3, 1), Vector2i(3, 5), Vector2i(3, 6), Vector2i(4, 0), Vector2i(4, 6), Vector2i(5, 3), Vector2i(6, 2), Vector2i(6, 3), Vector2i(6, 4)])
+defender_start_positions = Array[Vector2i]([Vector2i(2, 2), Vector2i(2, 3), Vector2i(2, 4), Vector2i(3, 2), Vector2i(3, 4), Vector2i(4, 2), Vector2i(4, 3), Vector2i(4, 4)])
+king_start_pos = Vector2i(3, 3)
+king_threatened_threshold = 2
+king_capture_sides = 4
