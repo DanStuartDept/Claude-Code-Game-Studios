@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="OpponentProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/opponent_profile.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/data/ai/erratic.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "Ruair\u00ed an Bhaird"
+character_id = "ruairi"
+difficulty = 4
+personality = ExtResource("2")
+feud_tendency = 0.15
+description = "The poet plays like he composes — brilliant flashes between long pauses, unpredictable and inspired"

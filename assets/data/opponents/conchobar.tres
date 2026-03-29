@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="OpponentProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/opponent_profile.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/data/ai/tactical.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "Conchobar Cr\u00edonna"
+character_id = "conchobar"
+difficulty = 5
+personality = ExtResource("2")
+feud_tendency = 0.0
+description = "The elder plays with the patience of a man who has seen every trick — slow, deliberate, suffocating"

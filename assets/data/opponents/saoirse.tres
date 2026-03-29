@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="OpponentProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/opponent_profile.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/data/ai/tactical.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "Saoirse na C\u00fairte"
+character_id = "saoirse"
+difficulty = 6
+personality = ExtResource("2")
+feud_tendency = 0.2
+description = "The court player treats the board like a negotiation — every move is an offer, every capture a closing argument"

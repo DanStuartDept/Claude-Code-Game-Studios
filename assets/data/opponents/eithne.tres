@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="OpponentProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/opponent_profile.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/data/ai/balanced.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "Eithne an Chi\u00fain"
+character_id = "eithne"
+difficulty = 5
+personality = ExtResource("2")
+feud_tendency = 0.1
+description = "She never speaks — her pieces do the talking, and they say everything"
