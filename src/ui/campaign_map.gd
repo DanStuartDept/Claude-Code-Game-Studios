@@ -160,6 +160,17 @@ func _build_ui() -> void:
 	_status_label.visible = false
 	vbox.add_child(_status_label)
 
+	# Settings button (top-right corner)
+	var settings_button := Button.new()
+	settings_button.text = "Settings"
+	settings_button.set_anchors_preset(PRESET_TOP_RIGHT)
+	settings_button.offset_left = -100.0
+	settings_button.offset_right = -10.0
+	settings_button.offset_top = 10.0
+	settings_button.offset_bottom = 44.0
+	settings_button.pressed.connect(_on_settings_pressed)
+	add_child(settings_button)
+
 	# Reputation breakdown panel (hidden until needed)
 	_rep_panel = PanelContainer.new()
 	_rep_panel.set_anchors_preset(PRESET_CENTER)
@@ -475,6 +486,85 @@ func _create_dialogue_overlay() -> Control:
 	if _autoplay:
 		overlay.set_meta("autoplay", true)
 	return overlay
+
+
+func _on_settings_pressed() -> void:
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(PRESET_CENTER)
+	panel.offset_left = -150.0
+	panel.offset_right = 150.0
+	panel.offset_top = -120.0
+	panel.offset_bottom = 120.0
+	add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Settings"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(0.9, 0.82, 0.55))
+	vbox.add_child(title)
+
+	# Text speed toggle
+	var text_speed_btn := Button.new()
+	text_speed_btn.text = "Text Speed: Instant"
+	text_speed_btn.pressed.connect(func() -> void:
+		if text_speed_btn.text == "Text Speed: Instant":
+			text_speed_btn.text = "Text Speed: Typewriter"
+		else:
+			text_speed_btn.text = "Text Speed: Instant")
+	vbox.add_child(text_speed_btn)
+
+	# Sound volume placeholder
+	var sound_label := Label.new()
+	sound_label.text = "Sound: Coming Soon"
+	sound_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sound_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.38))
+	vbox.add_child(sound_label)
+
+	# New Game button
+	var new_game_btn := Button.new()
+	new_game_btn.text = "New Game"
+	new_game_btn.pressed.connect(func() -> void:
+		panel.queue_free()
+		_confirm_new_game())
+	vbox.add_child(new_game_btn)
+
+	# Close button
+	var close_btn := Button.new()
+	close_btn.text = "Close"
+	close_btn.pressed.connect(func() -> void: panel.queue_free())
+	vbox.add_child(close_btn)
+
+
+func _confirm_new_game() -> void:
+	var save: Node = get_node_or_null("/root/SaveSystem")
+	if save != null and save.has_save():
+		var dialog := ConfirmationDialog.new()
+		dialog.dialog_text = "Starting a new game will erase your current journey. Are you sure?"
+		dialog.ok_button_text = "New Game"
+		dialog.cancel_button_text = "Cancel"
+		dialog.confirmed.connect(func() -> void:
+			dialog.queue_free()
+			if save != null:
+				save.delete_save()
+			_return_to_menu())
+		dialog.canceled.connect(func() -> void: dialog.queue_free())
+		add_child(dialog)
+		dialog.popup_centered()
+	else:
+		_return_to_menu()
+
+
+func _return_to_menu() -> void:
+	if _scene_manager != null:
+		visible = false
+		_scene_manager.change_scene(&"menu")
+		queue_free()
 
 
 ## Debug: auto-press challenge after a brief delay.
