@@ -429,7 +429,7 @@ func _on_turn_changed(_new_active_side: int) -> void:
 func _on_match_ended(result: Dictionary) -> void:
 	# Fade match music, play victory or defeat sting
 	stop_music()
-	var is_victory: bool = result.get("winner", "") == "player"
+	var is_victory: bool = result.get("winner", -1) == 1  # Side.DEFENDER = player
 	if is_victory:
 		play_sfx("match_victory")
 	else:

@@ -243,7 +243,7 @@ func test_audio_bus_name_mapping() -> void:
 
 func test_audio_match_ended_clears_music() -> void:
 	_audio._current_music_id = "match_chapter_1"
-	_audio._on_match_ended({"winner": "player"})
+	_audio._on_match_ended({"winner": 1})  # Side.DEFENDER = player
 	assert_str(_audio.get_current_music_id()).is_empty()
 
 
