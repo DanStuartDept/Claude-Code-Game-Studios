@@ -359,10 +359,39 @@ func _on_rep_continue() -> void:
 func _on_post_dialogue_complete() -> void:
 	# Check if chapter just completed
 	if _campaign.is_chapter_complete() and _campaign.current_chapter == 0:
-		# Prologue complete — auto-advance to Chapter 1
+		# Prologue complete — show narrator, then advance to Chapter 1
 		if _campaign.can_advance_chapter():
-			_campaign.advance_chapter()
+			_show_narrator_then_advance("narrator_ch0_post_scripted")
+			return
 
+	_update_display()
+
+
+## Show a narrator line, then advance chapter and update display.
+func _show_narrator_then_advance(line_id: String) -> void:
+	if _dialogue == null:
+		_campaign.advance_chapter()
+		_update_display()
+		return
+
+	var context: Dictionary = { "opponent_id": "narrator" }
+	var lines: Array = _dialogue.select_lines(context)
+
+	for line: Dictionary in lines:
+		if line.get("id", "") == line_id:
+			_dialogue._current_lines = [line]
+			_dialogue._current_line_index = 0
+			_dialogue._active = true
+
+			var overlay: Control = _create_dialogue_overlay()
+			add_child(overlay)
+			overlay.completed.connect(func() -> void:
+				_campaign.advance_chapter()
+				_update_display())
+			return
+
+	# Line not found — just advance
+	_campaign.advance_chapter()
 	_update_display()
 
 

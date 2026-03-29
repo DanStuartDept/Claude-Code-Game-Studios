@@ -307,6 +307,9 @@ func process_match_result(result: Dictionary) -> void:
 	# Mark opponent as encountered
 	encountered_opponents[opponent_id] = true
 
+	# Scripted matches always advance regardless of outcome (prologue loss)
+	var is_scripted: bool = (match_type == "scripted")
+
 	if player_won:
 		# Mark match completed
 		completed_matches[match_id] = true
@@ -320,6 +323,10 @@ func process_match_result(result: Dictionary) -> void:
 		_award_reputation(result, entry, opponent_id)
 
 		# Advance to next match in chapter
+		current_match_in_chapter += 1
+	elif is_scripted:
+		# Scripted loss — still advance (prologue designed loss)
+		completed_matches[match_id] = true
 		current_match_in_chapter += 1
 	else:
 		# Loss — stay at same position

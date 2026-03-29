@@ -58,6 +58,9 @@ var _autoplay_max_matches: int = 3
 ## Whether this match is part of a campaign (affects return behavior).
 var _campaign_mode: bool = false
 
+## Match type from campaign schedule ("standard" or "scripted").
+var _match_type: String = "standard"
+
 ## Last match result (for passing back to campaign map).
 var _last_match_result: Dictionary = {}
 
@@ -80,6 +83,7 @@ func _ready() -> void:
 			if ResourceLoader.exists(path):
 				opponent_profile = load(path)
 		_campaign_mode = scene_manager.scene_data.get("campaign_mode", false)
+		_match_type = scene_manager.scene_data.get("match_type", "standard")
 		scene_manager.scene_data = {}
 
 	_build_ui()
@@ -182,6 +186,7 @@ func _create_info_bar() -> VBoxContainer:
 func _start_match() -> void:
 	var board_rules: Node = _get_board_rules()
 	var ai_system: Node = _get_ai_system()
+	var is_scripted: bool = (_match_type == "scripted")
 
 	# Determine sides
 	_ai_side = 1 - player_side  # Opposite side
@@ -189,32 +194,42 @@ func _start_match() -> void:
 	# Start the match
 	board_rules.start_match(board_rules.MatchMode.STANDARD, player_side)
 
-	if debug_autoplay:
+	if debug_autoplay or is_scripted:
 		_autoplay_match_count += 1
-		print("[MATCH] === Starting match #%d ===" % _autoplay_match_count)
+		print("[MATCH] === Starting match #%d%s ===" % [
+			_autoplay_match_count,
+			" (SCRIPTED)" if is_scripted else ""])
 		print("[MATCH] Player side: %s | AI side: %s" % [
 			"DEFENDER" if player_side == 1 else "ATTACKER",
 			"ATTACKER" if _ai_side == 0 else "DEFENDER"])
 
-	# Configure AI (opponent)
-	if opponent_profile != null:
+	# Configure AI (opponent) — strong attacker for scripted mode
+	if is_scripted:
+		ai_system.configure(board_rules, _ai_side, 3, ai_system.Personality.TACTICAL)
+	elif opponent_profile != null:
 		ai_system.configure(board_rules, _ai_side)
 		opponent_profile.apply_to(ai_system)
 	else:
 		# Default: difficulty 1, erratic personality
 		ai_system.configure(board_rules, _ai_side, 1, ai_system.Personality.ERRATIC)
 
-	# Configure second AI for auto-play (player side)
-	if debug_autoplay:
+	# Configure second AI for auto-play or scripted mode (player side)
+	if debug_autoplay or is_scripted:
 		if _player_ai == null:
 			var AISystemScript: GDScript = preload("res://src/core/ai_system.gd")
 			_player_ai = AISystemScript.new()
 			_player_ai.name = "PlayerAI"
 			add_child(_player_ai)
-		_player_ai.configure(board_rules, player_side, 2, _player_ai.Personality.BALANCED)
-		_player_ai._mistake_chance = 0.15
-		print("[MATCH] Player AI: difficulty 2, Balanced")
-		print("[MATCH] Opponent AI: difficulty 1, Erratic")
+		if is_scripted:
+			# Weak defender: low difficulty, high mistakes — attacker should win
+			_player_ai.configure(board_rules, player_side, 1, _player_ai.Personality.ERRATIC)
+			_player_ai._mistake_chance = 0.5
+			print("[MATCH] Scripted: Attacker AI difficulty 3 Tactical, Defender AI difficulty 1 Erratic (50%% mistakes)")
+		else:
+			_player_ai.configure(board_rules, player_side, 2, _player_ai.Personality.BALANCED)
+			_player_ai._mistake_chance = 0.15
+			print("[MATCH] Player AI: difficulty 2, Balanced")
+			print("[MATCH] Opponent AI: difficulty 1, Erratic")
 
 	# Configure Board UI
 	var config: Resource = null
@@ -227,7 +242,7 @@ func _start_match() -> void:
 	board_rules.match_ended.connect(_on_match_ended)
 
 	# Debug logging for signals
-	if debug_autoplay:
+	if debug_autoplay or is_scripted:
 		if not board_rules.piece_moved.is_connected(_debug_on_piece_moved):
 			board_rules.piece_moved.connect(_debug_on_piece_moved)
 		if not board_rules.piece_captured.is_connected(_debug_on_piece_captured):
@@ -236,12 +251,17 @@ func _start_match() -> void:
 			board_rules.king_threatened.connect(_debug_on_king_threatened)
 
 	_match_active = true
-	_update_turn_display()
+
+	# Scripted mode: show "Watching..." instead of turn info
+	if is_scripted:
+		_turn_label.text = "Watching..."
+	else:
+		_update_turn_display()
 
 	# If AI goes first (player is defender, attacker starts)
 	if board_rules.get_active_side() == _ai_side:
 		_start_ai_turn()
-	elif debug_autoplay:
+	elif debug_autoplay or is_scripted:
 		_start_autoplay_turn()
 
 
@@ -250,7 +270,8 @@ func _start_match() -> void:
 # ---------------------------------------------------------------------------
 
 func _on_turn_changed(new_active_side: int) -> void:
-	_update_turn_display()
+	if _match_type != "scripted":
+		_update_turn_display()
 	_update_move_count()
 
 	if not _match_active:
@@ -258,20 +279,21 @@ func _on_turn_changed(new_active_side: int) -> void:
 
 	if new_active_side == _ai_side:
 		_start_ai_turn()
-	elif debug_autoplay:
+	elif debug_autoplay or _match_type == "scripted":
 		_start_autoplay_turn()
 
 
 func _start_ai_turn() -> void:
 	_ai_thinking = true
-	_ai_thinking_label.visible = true
-	_turn_label.text = "Opponent's turn"
+	_ai_thinking_label.visible = _match_type != "scripted"
+	if _match_type != "scripted":
+		_turn_label.text = "Opponent's turn"
 
 	var ai_system: Node = _get_ai_system()
 	var board_rules: Node = _get_board_rules()
 
-	# Wait for think time (feels natural)
-	var think_time: float = ai_system.get_think_time()
+	# Wait for think time — fast in scripted mode
+	var think_time: float = 0.3 if _match_type == "scripted" else ai_system.get_think_time()
 	await get_tree().create_timer(think_time).timeout
 
 	if not _match_active:
@@ -320,6 +342,27 @@ func _on_match_ended(result: Dictionary) -> void:
 	_match_active = false
 	_ai_thinking = false
 	_ai_thinking_label.visible = false
+
+	# Scripted mode: force attacker win regardless of actual outcome
+	if _match_type == "scripted":
+		var board_rules: Node = _get_board_rules()
+		_last_match_result = {
+			"winner": 0,  # Side.ATTACKER
+			"reason": board_rules.WinReason.KING_CAPTURED,
+			"move_count": result.get("move_count", 0),
+			"pieces_remaining": result.get("pieces_remaining", {}),
+		}
+
+		# Wait for animations, brief pause, then auto-return
+		if _board_ui.is_animating():
+			await _board_ui.animations_finished
+		await get_tree().create_timer(1.0).timeout
+
+		_turn_label.text = "Defeat"
+		await get_tree().create_timer(1.5).timeout
+		_return_to_campaign()
+		return
+
 	_last_match_result = result
 
 	# Wait for animations to finish
@@ -385,18 +428,22 @@ func _show_result(result: Dictionary) -> void:
 		_on_play_again_pressed()
 
 
+func _return_to_campaign() -> void:
+	var scene_manager: Node = get_node_or_null("/root/SceneManager")
+	if scene_manager != null:
+		scene_manager.scene_data = { "match_result": _last_match_result }
+		visible = false
+		scene_manager.change_scene(&"campaign_map")
+		queue_free()
+
+
 func _on_play_again_pressed() -> void:
 	_result_panel.visible = false
 
 	# Campaign mode: return to campaign map with the result
 	if _campaign_mode and not debug_autoplay:
-		var scene_manager: Node = get_node_or_null("/root/SceneManager")
-		if scene_manager != null:
-			scene_manager.scene_data = { "match_result": _last_match_result }
-			visible = false
-			scene_manager.change_scene(&"campaign_map")
-			queue_free()
-			return
+		_return_to_campaign()
+		return
 
 	# Quick play / auto-play: restart match
 	var board_rules: Node = _get_board_rules()
@@ -417,12 +464,14 @@ func _start_autoplay_turn() -> void:
 	if _player_ai == null or not _match_active:
 		return
 
-	_turn_label.text = "Auto-playing..."
+	if _match_type != "scripted":
+		_turn_label.text = "Auto-playing..."
 
 	var board_rules: Node = _get_board_rules()
 
-	# Short delay so animations can play
-	await get_tree().create_timer(0.15).timeout
+	# Short delay so animations can play — faster in scripted mode
+	var delay: float = 0.2 if _match_type == "scripted" else 0.15
+	await get_tree().create_timer(delay).timeout
 
 	if not _match_active:
 		return

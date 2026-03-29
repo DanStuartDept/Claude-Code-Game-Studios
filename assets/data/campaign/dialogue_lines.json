@@ -70,9 +70,9 @@
     "text": "I have heard your name. I expected something more."
   },
   {
-    "id": "murchadh_post_win_scripted",
+    "id": "murchadh_post_loss_scripted",
     "opponent_id": "murchadh",
-    "timing": "post_win",
+    "timing": "post_loss",
     "encounter": "first",
     "result_history": null,
     "feud_state": null,
