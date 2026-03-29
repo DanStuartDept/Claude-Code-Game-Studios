@@ -37,6 +37,9 @@ const CHARACTER_BG_COLOR: Color = Color(0.0, 0.0, 0.0, 0.5)
 ## The DialogueSystem node (autoload).
 var _dialogue_system: Node = null
 
+## The LocaleSystem node (autoload) for i18n string lookup.
+var _locale_system: Node = null
+
 ## Minimum delay between taps to prevent accidental skips.
 var _tap_cooldown: float = 0.2
 var _last_tap_time: float = 0.0
@@ -48,6 +51,7 @@ var _last_tap_time: float = 0.0
 
 func _ready() -> void:
 	_dialogue_system = get_node_or_null("/root/DialogueSystem")
+	_locale_system = get_node_or_null("/root/LocaleSystem")
 	_build_ui()
 
 	if _dialogue_system != null and _dialogue_system.is_active():
@@ -157,8 +161,13 @@ func _show_current_line() -> void:
 	else:
 		_apply_character_style(speaker, opponent_id)
 
-	# Dialogue text
-	_text_label.text = line.get("text", "")
+	# Dialogue text — resolve via locale key with fallback to raw text
+	var text_key: String = line.get("textKey", "")
+	var raw_text: String = line.get("text", "")
+	if _locale_system != null and text_key != "":
+		_text_label.text = _locale_system.lookup(text_key, raw_text)
+	else:
+		_text_label.text = raw_text
 
 	# Update continue prompt
 	var remaining: int = _dialogue_system._current_lines.size() - _dialogue_system._current_line_index - 1
@@ -181,7 +190,15 @@ func _apply_narrator_style() -> void:
 
 ## Apply character dialogue style: name label, left-aligned text.
 func _apply_character_style(speaker: String, opponent_id: String) -> void:
-	if speaker != "":
+	# Resolve speaker name via locale key with fallback
+	var speaker_key: String = "speaker." + opponent_id if opponent_id != "" else ""
+	var resolved_speaker: String = speaker
+	if _locale_system != null and speaker_key != "":
+		resolved_speaker = _locale_system.lookup(speaker_key, speaker)
+
+	if resolved_speaker != "":
+		_name_label.text = resolved_speaker
+	elif speaker != "":
 		_name_label.text = speaker
 	else:
 		var campaign: Node = get_node_or_null("/root/CampaignSystem")

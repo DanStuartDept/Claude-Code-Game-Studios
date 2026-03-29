@@ -134,8 +134,9 @@ func _begin_step() -> void:
 	# Show narrator text
 	var narrator_text: String = step.get("narratorText", "")
 	if narrator_text != "":
+		var narrator_key: String = step.get("narratorTextKey", "")
 		_awaiting_narrator_dismiss = true
-		_show_narrator_text(narrator_text)
+		_show_narrator_text(narrator_text, narrator_key)
 	else:
 		_after_narrator_dismissed()
 
@@ -226,10 +227,11 @@ func _check_step_completion() -> void:
 	# Check for post-action narrator text (e.g., step 5 "Like that.")
 	var after_text: String = step.get("narratorTextAfter", "")
 	if after_text != "":
+		var after_key: String = step.get("narratorTextAfterKey", "")
 		# Clear it so we don't re-show
 		_steps[_current_step]["narratorTextAfter"] = ""
 		_awaiting_narrator_dismiss = true
-		_show_narrator_text(after_text)
+		_show_narrator_text(after_text, after_key)
 		return
 
 	_advance_step()
@@ -252,13 +254,14 @@ func _complete_tutorial() -> void:
 # Narrator Display
 # ---------------------------------------------------------------------------
 
-func _show_narrator_text(text: String) -> void:
+func _show_narrator_text(text: String, text_key: String = "") -> void:
 	# Create a narrator line dict compatible with DialogueOverlay
 	var line: Dictionary = {
 		"id": "tutorial_narrator",
 		"opponent_id": "narrator",
 		"speaker": "",
 		"text": text,
+		"textKey": text_key,
 	}
 
 	if _dialogue != null:

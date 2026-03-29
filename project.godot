@@ -25,6 +25,7 @@ DialogueSystem="*res://src/core/dialogue_system.gd"
 SaveSystem="*res://src/core/save_system.gd"
 FeudSystem="*res://src/core/feud_system.gd"
 TutorialSystem="*res://src/core/tutorial_system.gd"
+LocaleSystem="*res://src/core/locale_system.gd"
 
 [editor_plugins]
 

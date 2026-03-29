@@ -11,7 +11,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "",
-    "text": "The hall at Tara is quiet now, and I am the reason for the quiet. Murchadh mac Fáelán did not need to raise his voice — the board said everything he wished to say, and the board said it plainly."
+    "speakerKey": "speaker.narrator",
+    "text": "The hall at Tara is quiet now, and I am the reason for the quiet. Murchadh mac Fáelán did not need to raise his voice — the board said everything he wished to say, and the board said it plainly.",
+    "textKey": "dialogue.narrator_ch0_start"
   },
   {
     "id": "narrator_ch0_post_scripted",
@@ -25,7 +27,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "",
-    "text": "I walk out of Tara with the clothes on my back and the game in my head. There are roads west — there are always roads west — and people who have not yet heard my name said wrong."
+    "speakerKey": "speaker.narrator",
+    "text": "I walk out of Tara with the clothes on my back and the game in my head. There are roads west — there are always roads west — and people who have not yet heard my name said wrong.",
+    "textKey": "dialogue.narrator_ch0_post_scripted"
   },
   {
     "id": "narrator_ch1_start",
@@ -39,7 +43,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "",
-    "text": "Connacht. The Atlantic comes in hard off the headlands and everything here smells of salt and old rain. These people have their own games, their own grudges. I am nobody here, and that is where I begin."
+    "speakerKey": "speaker.narrator",
+    "text": "Connacht. The Atlantic comes in hard off the headlands and everything here smells of salt and old rain. These people have their own games, their own grudges. I am nobody here, and that is where I begin.",
+    "textKey": "dialogue.narrator_ch1_start"
   },
   {
     "id": "narrator_ch1_end",
@@ -53,7 +59,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "",
-    "text": "Fiachra watched me go without a word, and I felt his eyes on my back for a long while. The road east is longer than the road I came by. Murchadh is at the end of it, and he does not know I am walking."
+    "speakerKey": "speaker.narrator",
+    "text": "Fiachra watched me go without a word, and I felt his eyes on my back for a long while. The road east is longer than the road I came by. Murchadh is at the end of it, and he does not know I am walking.",
+    "textKey": "dialogue.narrator_ch1_end"
   },
   {
     "id": "murchadh_pre_scripted",
@@ -67,7 +75,9 @@
     "is_final_boss": false,
     "match_type": "scripted",
     "speaker": "Murchadh mac Fáelán",
-    "text": "I have heard your name. I expected something more."
+    "speakerKey": "speaker.murchadh",
+    "text": "I have heard your name. I expected something more.",
+    "textKey": "dialogue.murchadh_pre_scripted"
   },
   {
     "id": "murchadh_post_loss_scripted",
@@ -81,7 +91,9 @@
     "is_final_boss": false,
     "match_type": "scripted",
     "speaker": "Murchadh mac Fáelán",
-    "text": "Go west. There may be people there who will play you."
+    "speakerKey": "speaker.murchadh",
+    "text": "Go west. There may be people there who will play you.",
+    "textKey": "dialogue.murchadh_post_loss_scripted"
   },
   {
     "id": "seanan_pre_first",
@@ -95,7 +107,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Séanán na Farraige",
-    "text": "Sit, sit — I was going to mend the net but it can wait. You look like someone who has been walking a while."
+    "speakerKey": "speaker.seanan",
+    "text": "Sit, sit — I was going to mend the net but it can wait. You look like someone who has been walking a while.",
+    "textKey": "dialogue.seanan_pre_first"
   },
   {
     "id": "seanan_post_win_first",
@@ -109,7 +123,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Séanán na Farraige",
-    "text": "Ha. Well. The fish will not mock me for it, I suppose. You play like someone who has lost before and did not forget it."
+    "speakerKey": "speaker.seanan",
+    "text": "Ha. Well. The fish will not mock me for it, I suppose. You play like someone who has lost before and did not forget it.",
+    "textKey": "dialogue.seanan_post_win_first"
   },
   {
     "id": "seanan_post_loss_first",
@@ -123,7 +139,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Séanán na Farraige",
-    "text": "There it is. I do not always see the whole board but sometimes the board shows me anyway. Stay and eat, if you like."
+    "speakerKey": "speaker.seanan",
+    "text": "There it is. I do not always see the whole board but sometimes the board shows me anyway. Stay and eat, if you like.",
+    "textKey": "dialogue.seanan_post_loss_first"
   },
   {
     "id": "seanan_pre_retry",
@@ -137,7 +155,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Séanán na Farraige",
-    "text": "Back already. I thought you might be. Here — the board is where you left it."
+    "speakerKey": "speaker.seanan",
+    "text": "Back already. I thought you might be. Here — the board is where you left it.",
+    "textKey": "dialogue.seanan_pre_retry"
   },
   {
     "id": "brigid_pre_first",
@@ -151,7 +171,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Brigid na Scailpe",
-    "text": "I do not play in haste and I do not play in company I do not trust. Sit with me a while first. Then we will see."
+    "speakerKey": "speaker.brigid",
+    "text": "I do not play in haste and I do not play in company I do not trust. Sit with me a while first. Then we will see.",
+    "textKey": "dialogue.brigid_pre_first"
   },
   {
     "id": "brigid_post_win_first",
@@ -165,7 +187,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Brigid na Scailpe",
-    "text": "You protect the King as though you have been the King yourself once. That is not a common thing."
+    "speakerKey": "speaker.brigid",
+    "text": "You protect the King as though you have been the King yourself once. That is not a common thing.",
+    "textKey": "dialogue.brigid_post_win_first"
   },
   {
     "id": "brigid_post_loss_first",
@@ -179,7 +203,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Brigid na Scailpe",
-    "text": "You opened too early. Patience is not the absence of movement — it is knowing which movement to withhold."
+    "speakerKey": "speaker.brigid",
+    "text": "You opened too early. Patience is not the absence of movement — it is knowing which movement to withhold.",
+    "textKey": "dialogue.brigid_post_loss_first"
   },
   {
     "id": "brigid_pre_retry",
@@ -193,7 +219,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Brigid na Scailpe",
-    "text": "You have thought about it since. I can see that. Good — thinking is most of the game."
+    "speakerKey": "speaker.brigid",
+    "text": "You have thought about it since. I can see that. Good — thinking is most of the game.",
+    "textKey": "dialogue.brigid_pre_retry"
   },
   {
     "id": "tadhg_pre_first",
@@ -207,7 +235,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Tadhg an Ósta",
-    "text": "I have beaten three men today already and the night is young. Set the board — I do not have all evening."
+    "speakerKey": "speaker.tadhg",
+    "text": "I have beaten three men today already and the night is young. Set the board — I do not have all evening.",
+    "textKey": "dialogue.tadhg_pre_first"
   },
   {
     "id": "tadhg_post_win_first",
@@ -221,7 +251,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Tadhg an Ósta",
-    "text": "Right, right — fair enough. Who sent you? Séanán? He has the look of someone who teaches quietly."
+    "speakerKey": "speaker.tadhg",
+    "text": "Right, right — fair enough. Who sent you? Séanán? He has the look of someone who teaches quietly.",
+    "textKey": "dialogue.tadhg_post_win_first"
   },
   {
     "id": "tadhg_post_loss_first",
@@ -235,7 +267,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Tadhg an Ósta",
-    "text": "You held too long — a man who will not press his advantage is a man asking to lose. Come back when you have the stomach for it."
+    "speakerKey": "speaker.tadhg",
+    "text": "You held too long — a man who will not press his advantage is a man asking to lose. Come back when you have the stomach for it.",
+    "textKey": "dialogue.tadhg_post_loss_first"
   },
   {
     "id": "tadhg_pre_retry",
@@ -249,7 +283,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Tadhg an Ósta",
-    "text": "Again. Fine. This time I will not make it easy."
+    "speakerKey": "speaker.tadhg",
+    "text": "Again. Fine. This time I will not make it easy.",
+    "textKey": "dialogue.tadhg_pre_retry"
   },
   {
     "id": "fiachra_pre_first",
@@ -263,7 +299,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
-    "text": "I have heard three different things about you from three different people, and none of them agreed. Sit — I want to see which one is true."
+    "speakerKey": "speaker.fiachra",
+    "text": "I have heard three different things about you from three different people, and none of them agreed. Sit — I want to see which one is true.",
+    "textKey": "dialogue.fiachra_pre_first"
   },
   {
     "id": "fiachra_post_win_first",
@@ -277,7 +315,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
-    "text": "There is someone east of here who has not seen that. I wonder if you will get there before he hears of it."
+    "speakerKey": "speaker.fiachra",
+    "text": "There is someone east of here who has not seen that. I wonder if you will get there before he hears of it.",
+    "textKey": "dialogue.fiachra_post_win_first"
   },
   {
     "id": "fiachra_post_loss_first",
@@ -291,7 +331,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
-    "text": "You protect the centre well enough. But you read the board — you do not read the player. That is the gap."
+    "speakerKey": "speaker.fiachra",
+    "text": "You protect the centre well enough. But you read the board — you do not read the player. That is the gap.",
+    "textKey": "dialogue.fiachra_post_loss_first"
   },
   {
     "id": "fiachra_pre_retry",
@@ -305,7 +347,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
-    "text": "You came back. That is the first thing I needed to know about you."
+    "speakerKey": "speaker.fiachra",
+    "text": "You came back. That is the first thing I needed to know about you.",
+    "textKey": "dialogue.fiachra_pre_retry"
   },
   {
     "id": "seanan_post_win_retry",
@@ -319,7 +363,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Séanán na Farraige",
-    "text": "You came back quieter than you left, and you played quieter too. That is how the sea teaches — not with words."
+    "speakerKey": "speaker.seanan",
+    "text": "You came back quieter than you left, and you played quieter too. That is how the sea teaches — not with words.",
+    "textKey": "dialogue.seanan_post_win_retry"
   },
   {
     "id": "brigid_post_win_retry",
@@ -333,7 +379,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Brigid na Scailpe",
-    "text": "You held the thing you learned and did not let the losing spoil it. That is the harder discipline, and you had it."
+    "speakerKey": "speaker.brigid",
+    "text": "You held the thing you learned and did not let the losing spoil it. That is the harder discipline, and you had it.",
+    "textKey": "dialogue.brigid_post_win_retry"
   },
   {
     "id": "tadhg_post_win_retry",
@@ -347,7 +395,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Tadhg an Ósta",
-    "text": "All right, all right — you came back and you came back better, I will give you that much and not a word more."
+    "speakerKey": "speaker.tadhg",
+    "text": "All right, all right — you came back and you came back better, I will give you that much and not a word more.",
+    "textKey": "dialogue.tadhg_post_win_retry"
   },
   {
     "id": "fiachra_post_win_retry",
@@ -361,7 +411,9 @@
     "is_final_boss": null,
     "match_type": "standard",
     "speaker": "Fiachra an Fhánaí",
-    "text": "The second thing I needed to know about you — you came back and you won. The road east is yours."
+    "speakerKey": "speaker.fiachra",
+    "text": "The second thing I needed to know about you — you came back and you won. The road east is yours.",
+    "textKey": "dialogue.fiachra_post_win_retry"
   },
 
   {
@@ -376,7 +428,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Séanán na Farraige",
-    "text": "I did not expect to see you here again, not after the way that went. Sit then — but I am not going easy."
+    "speakerKey": "speaker.seanan",
+    "text": "I did not expect to see you here again, not after the way that went. Sit then — but I am not going easy.",
+    "textKey": "dialogue.seanan_feud_pre"
   },
   {
     "id": "seanan_feud_post_win",
@@ -390,7 +444,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Séanán na Farraige",
-    "text": "There — now that is a thing. I will not hold what was before against what just happened. The board has its own memory."
+    "speakerKey": "speaker.seanan",
+    "text": "There — now that is a thing. I will not hold what was before against what just happened. The board has its own memory.",
+    "textKey": "dialogue.seanan_feud_post_win"
   },
   {
     "id": "seanan_feud_post_loss",
@@ -404,7 +460,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Séanán na Farraige",
-    "text": "Again. I do not know what you are trying to prove but the board keeps saying you have not proved it."
+    "speakerKey": "speaker.seanan",
+    "text": "Again. I do not know what you are trying to prove but the board keeps saying you have not proved it.",
+    "textKey": "dialogue.seanan_feud_post_loss"
   },
   {
     "id": "seanan_nemesis_pre",
@@ -418,7 +476,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Séanán na Farraige",
-    "text": "I have said nothing to anyone about this and I will not. But you keep coming back, and I keep winning, and that is between us."
+    "speakerKey": "speaker.seanan",
+    "text": "I have said nothing to anyone about this and I will not. But you keep coming back, and I keep winning, and that is between us.",
+    "textKey": "dialogue.seanan_nemesis_pre"
   },
   {
     "id": "seanan_nemesis_post_win",
@@ -432,7 +492,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Séanán na Farraige",
-    "text": "Well. There it is. The sea does not stay angry — that was never the sea's way. Go on, then."
+    "speakerKey": "speaker.seanan",
+    "text": "Well. There it is. The sea does not stay angry — that was never the sea's way. Go on, then.",
+    "textKey": "dialogue.seanan_nemesis_post_win"
   },
 
   {
@@ -447,7 +509,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Brigid na Scailpe",
-    "text": "I gave you time and I gave you the game straight. What you took from it was not what I offered. Come — we will see if you have corrected that."
+    "speakerKey": "speaker.brigid",
+    "text": "I gave you time and I gave you the game straight. What you took from it was not what I offered. Come — we will see if you have corrected that.",
+    "textKey": "dialogue.brigid_feud_pre"
   },
   {
     "id": "brigid_feud_post_win",
@@ -461,7 +525,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Brigid na Scailpe",
-    "text": "You found the discipline. That is what I was waiting for — not the win, the discipline behind it. We are done with this."
+    "speakerKey": "speaker.brigid",
+    "text": "You found the discipline. That is what I was waiting for — not the win, the discipline behind it. We are done with this.",
+    "textKey": "dialogue.brigid_feud_post_win"
   },
   {
     "id": "brigid_feud_post_loss",
@@ -475,7 +541,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Brigid na Scailpe",
-    "text": "It is the same gap, in a different place. You have not found the root of it yet. I have nothing to add."
+    "speakerKey": "speaker.brigid",
+    "text": "It is the same gap, in a different place. You have not found the root of it yet. I have nothing to add.",
+    "textKey": "dialogue.brigid_feud_post_loss"
   },
   {
     "id": "brigid_nemesis_pre",
@@ -489,7 +557,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Brigid na Scailpe",
-    "text": "I do not hold things with heat. I hold them with stillness. You have had a long time to feel that stillness and it has not moved you. Sit."
+    "speakerKey": "speaker.brigid",
+    "text": "I do not hold things with heat. I hold them with stillness. You have had a long time to feel that stillness and it has not moved you. Sit.",
+    "textKey": "dialogue.brigid_nemesis_pre"
   },
   {
     "id": "brigid_nemesis_post_win",
@@ -503,7 +573,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Brigid na Scailpe",
-    "text": "I misjudged how long it would take you. That is my error, not yours. You have the thing now. Keep it."
+    "speakerKey": "speaker.brigid",
+    "text": "I misjudged how long it would take you. That is my error, not yours. You have the thing now. Keep it.",
+    "textKey": "dialogue.brigid_nemesis_post_win"
   },
 
   {
@@ -518,7 +590,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Tadhg an Ósta",
-    "text": "I told everyone in this house you would come back and lose again. Do not make me wrong."
+    "speakerKey": "speaker.tadhg",
+    "text": "I told everyone in this house you would come back and lose again. Do not make me wrong.",
+    "textKey": "dialogue.tadhg_feud_pre"
   },
   {
     "id": "tadhg_feud_post_win",
@@ -532,7 +606,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Tadhg an Ósta",
-    "text": "Right. Once. Do not think that means anything. Get out of my hall before I change my mind about being gracious."
+    "speakerKey": "speaker.tadhg",
+    "text": "Right. Once. Do not think that means anything. Get out of my hall before I change my mind about being gracious.",
+    "textKey": "dialogue.tadhg_feud_post_win"
   },
   {
     "id": "tadhg_feud_post_loss",
@@ -546,7 +622,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Tadhg an Ósta",
-    "text": "There it is. Twice. Walk away and do not come back until you have something new."
+    "speakerKey": "speaker.tadhg",
+    "text": "There it is. Twice. Walk away and do not come back until you have something new.",
+    "textKey": "dialogue.tadhg_feud_post_loss"
   },
   {
     "id": "tadhg_nemesis_pre",
@@ -560,7 +638,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Tadhg an Ósta",
-    "text": "I have beaten you enough times that your name in my hall is a joke. Prove it wrong or do not sit down."
+    "speakerKey": "speaker.tadhg",
+    "text": "I have beaten you enough times that your name in my hall is a joke. Prove it wrong or do not sit down.",
+    "textKey": "dialogue.tadhg_nemesis_pre"
   },
   {
     "id": "tadhg_nemesis_post_win",
@@ -574,7 +654,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Tadhg an Ósta",
-    "text": "You won. In my hall. I will not pretend that did not happen. I will not give you more than that."
+    "speakerKey": "speaker.tadhg",
+    "text": "You won. In my hall. I will not pretend that did not happen. I will not give you more than that.",
+    "textKey": "dialogue.tadhg_nemesis_post_win"
   },
 
   {
@@ -589,7 +671,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Fiachra an Fhánaí",
-    "text": "You came back with something on your face that was not there before. I do not think that is the board you are angry at. Sit — let us find out."
+    "speakerKey": "speaker.fiachra",
+    "text": "You came back with something on your face that was not there before. I do not think that is the board you are angry at. Sit — let us find out.",
+    "textKey": "dialogue.fiachra_feud_pre"
   },
   {
     "id": "fiachra_feud_post_win",
@@ -603,7 +687,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Fiachra an Fhánaí",
-    "text": "That is what I was watching for — not the move, what came before the move. You found something. The rest of this is finished."
+    "speakerKey": "speaker.fiachra",
+    "text": "That is what I was watching for — not the move, what came before the move. You found something. The rest of this is finished.",
+    "textKey": "dialogue.fiachra_feud_post_win"
   },
   {
     "id": "fiachra_feud_post_loss",
@@ -617,7 +703,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Fiachra an Fhánaí",
-    "text": "You are carrying something into the game that does not belong there. Until you set it down you will keep losing it for reasons that have nothing to do with the board."
+    "speakerKey": "speaker.fiachra",
+    "text": "You are carrying something into the game that does not belong there. Until you set it down you will keep losing it for reasons that have nothing to do with the board.",
+    "textKey": "dialogue.fiachra_feud_post_loss"
   },
   {
     "id": "fiachra_nemesis_pre",
@@ -631,7 +719,9 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Fiachra an Fhánaí",
-    "text": "I have told no one what I think is happening with you. There is still time to resolve it on the board. This is the last time I will offer that."
+    "speakerKey": "speaker.fiachra",
+    "text": "I have told no one what I think is happening with you. There is still time to resolve it on the board. This is the last time I will offer that.",
+    "textKey": "dialogue.fiachra_nemesis_pre"
   },
   {
     "id": "fiachra_nemesis_post_win",
@@ -645,6 +735,8 @@
     "is_final_boss": null,
     "match_type": null,
     "speaker": "Fiachra an Fhánaí",
-    "text": "I wondered if you would get here. I stopped wondering a while ago and started waiting. The road east is clearer now — you have settled the thing that was clouding it."
+    "speakerKey": "speaker.fiachra",
+    "text": "I wondered if you would get here. I stopped wondering a while ago and started waiting. The road east is clearer now — you have settled the thing that was clouding it.",
+    "textKey": "dialogue.fiachra_nemesis_post_win"
   }
 ]

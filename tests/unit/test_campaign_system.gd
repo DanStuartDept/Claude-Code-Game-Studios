@@ -35,6 +35,13 @@ func _win_result(move_count: int = 25) -> Dictionary:
 	}
 
 
+## Skip the prologue (tutorial win + scripted loss) and advance to chapter 1.
+func _skip_prologue() -> void:
+	_cs.process_match_result(_win_result())   # tutorial win
+	_cs.process_match_result(_loss_result())   # scripted loss
+	_cs.advance_chapter()
+
+
 ## Simulate a player loss result.
 func _loss_result() -> Dictionary:
 	return {
@@ -66,10 +73,10 @@ func test_campaign_start_resets_state() -> void:
 # get_current_match_entry
 # ---------------------------------------------------------------------------
 
-func test_campaign_first_match_is_prologue_scripted() -> void:
+func test_campaign_first_match_is_prologue_tutorial() -> void:
 	var entry: Dictionary = _cs.get_current_match_entry()
-	assert_str(entry.match_id).is_equal("ch0_scripted")
-	assert_str(entry.match_type).is_equal("scripted")
+	assert_str(entry.match_id).is_equal("ch0_tutorial")
+	assert_str(entry.match_type).is_equal("tutorial")
 	assert_int(entry.chapter).is_equal(0)
 
 
@@ -78,9 +85,13 @@ func test_campaign_first_match_is_prologue_scripted() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_scripted_loss_advances() -> void:
+	# Advance past tutorial match first (win)
+	_cs.process_match_result(_win_result())
+	assert_int(_cs.current_match_in_chapter).is_equal(1)
+
 	# Prologue scripted match — loss still advances
 	_cs.process_match_result(_loss_result())
-	assert_int(_cs.current_match_in_chapter).is_equal(1)
+	assert_int(_cs.current_match_in_chapter).is_equal(2)
 	assert_bool(_cs.completed_matches.has("ch0_scripted")).is_true()
 
 
@@ -89,9 +100,7 @@ func test_campaign_scripted_loss_advances() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_win_advances_match() -> void:
-	# Skip prologue first
-	_cs.process_match_result(_loss_result())  # scripted
-	_cs.advance_chapter()  # Move to chapter 1
+	_skip_prologue()
 
 	# Ch1 match 1: win
 	var entry_before: Dictionary = _cs.get_current_match_entry()
@@ -109,8 +118,7 @@ func test_campaign_win_advances_match() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_loss_stays_at_same_match() -> void:
-	_cs.process_match_result(_loss_result())  # scripted prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 
 	_cs.process_match_result(_loss_result())  # Lose to ch1_match1
 	assert_int(_cs.current_match_in_chapter).is_equal(0)  # Still at match 0
@@ -122,8 +130,7 @@ func test_campaign_loss_stays_at_same_match() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_loss_streak_increments_and_resets() -> void:
-	_cs.process_match_result(_loss_result())  # scripted prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 
 	_cs.process_match_result(_loss_result())
 	assert_int(_cs.current_loss_streak).is_equal(1)
@@ -140,8 +147,9 @@ func test_campaign_loss_streak_increments_and_resets() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_advance_chapter_from_prologue() -> void:
-	# Complete prologue (single scripted match)
-	_cs.process_match_result(_loss_result())
+	# Complete prologue (tutorial win + scripted loss)
+	_cs.process_match_result(_win_result())   # tutorial
+	_cs.process_match_result(_loss_result())   # scripted
 
 	assert_bool(_cs.is_chapter_complete()).is_true()
 	assert_bool(_cs.can_advance_chapter()).is_true()
@@ -163,10 +171,12 @@ func test_campaign_cannot_advance_without_completing_chapter() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_encounter_count_tracks_matches() -> void:
-	# Prologue — fight murchadh
+	# Prologue — fight murchadh (tutorial then scripted)
 	assert_int(_cs.get_encounter_count("murchadh")).is_equal(0)
-	_cs.process_match_result(_loss_result())
+	_cs.process_match_result(_win_result())   # tutorial
 	assert_int(_cs.get_encounter_count("murchadh")).is_equal(1)
+	_cs.process_match_result(_loss_result())   # scripted
+	assert_int(_cs.get_encounter_count("murchadh")).is_equal(2)
 
 
 func test_campaign_result_history_no_prior() -> void:
@@ -174,22 +184,19 @@ func test_campaign_result_history_no_prior() -> void:
 
 
 func test_campaign_result_history_lost_to_them() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_loss_result())  # lose to seanan
 	assert_str(_cs.get_result_history("seanan")).is_equal("lost_to_them")
 
 
 func test_campaign_result_history_beat_them() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_win_result())  # beat seanan
 	assert_str(_cs.get_result_history("seanan")).is_equal("beat_them")
 
 
 func test_campaign_result_history_mixed() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_loss_result())  # lose to seanan
 	_cs.process_match_result(_win_result())  # beat seanan (retry)
 	assert_str(_cs.get_result_history("seanan")).is_equal("mixed")
@@ -204,15 +211,13 @@ func test_campaign_encounter_type_first() -> void:
 
 
 func test_campaign_encounter_type_second() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_loss_result())  # first encounter with seanan
 	assert_str(_cs.get_encounter_type("seanan")).is_equal("second")
 
 
 func test_campaign_encounter_type_third_plus() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_loss_result())  # 1st
 	_cs.process_match_result(_loss_result())  # 2nd
 	assert_str(_cs.get_encounter_type("seanan")).is_equal("third_plus")
@@ -227,8 +232,7 @@ func test_campaign_has_lost_to_false_initially() -> void:
 
 
 func test_campaign_has_lost_to_true_after_loss() -> void:
-	_cs.process_match_result(_loss_result())  # prologue
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_loss_result())  # lose to seanan
 	assert_bool(_cs.has_lost_to("seanan")).is_true()
 
@@ -238,7 +242,7 @@ func test_campaign_has_lost_to_true_after_loss() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_encountered_opponents_populated() -> void:
-	_cs.process_match_result(_loss_result())  # prologue (murchadh)
+	_cs.process_match_result(_win_result())  # tutorial (murchadh)
 	assert_bool(_cs.encountered_opponents.has("murchadh")).is_true()
 
 
@@ -264,7 +268,8 @@ func test_campaign_chapter_completed_signal() -> void:
 	var signal_data := []
 	_cs.chapter_completed.connect(func(ch: int) -> void: signal_data.append(ch))
 
-	_cs.process_match_result(_loss_result())  # complete prologue
+	_cs.process_match_result(_win_result())    # tutorial
+	_cs.process_match_result(_loss_result())   # scripted — complete prologue
 	_cs.advance_chapter()
 
 	assert_int(signal_data.size()).is_equal(1)
@@ -277,8 +282,7 @@ func test_campaign_chapter_completed_signal() -> void:
 
 func test_campaign_save_load_round_trip() -> void:
 	# Progress through prologue and into chapter 1
-	_cs.process_match_result(_loss_result())  # prologue scripted
-	_cs.advance_chapter()
+	_skip_prologue()
 	_cs.process_match_result(_win_result())  # beat ch1_match1
 
 	var save_data: Dictionary = _cs.get_save_data()
@@ -309,11 +313,10 @@ func test_campaign_get_current_chapter_info() -> void:
 
 
 func test_campaign_chapter_match_count() -> void:
-	# Prologue has 1 match (ch0_scripted)
-	assert_int(_cs.get_chapter_match_count()).is_equal(1)
+	# Prologue has 2 matches (ch0_tutorial + ch0_scripted)
+	assert_int(_cs.get_chapter_match_count()).is_equal(2)
 
-	_cs.process_match_result(_loss_result())
-	_cs.advance_chapter()
+	_skip_prologue()
 
 	# Chapter 1 has 4 matches
 	assert_int(_cs.get_chapter_match_count()).is_equal(4)
@@ -324,7 +327,8 @@ func test_campaign_chapter_match_count() -> void:
 # ---------------------------------------------------------------------------
 
 func test_campaign_get_current_match_entry_empty_at_chapter_end() -> void:
-	_cs.process_match_result(_loss_result())  # complete prologue
-	# Now current_match_in_chapter = 1 but prologue only has 1 match
+	_cs.process_match_result(_win_result())    # tutorial
+	_cs.process_match_result(_loss_result())   # scripted — complete prologue
+	# Now current_match_in_chapter = 2 but prologue only has 2 matches
 	var entry: Dictionary = _cs.get_current_match_entry()
 	assert_dict(entry).is_empty()
