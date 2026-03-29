@@ -210,8 +210,8 @@ func _write_campaign_summary() -> void:
 			"matches": cs["matches"],
 			"wins": cs["wins"],
 			"losses": cs["losses"],
-			"avg_moves": cs["total_moves"] / cs["matches"] if cs["matches"] > 0 else 0,
-			"avg_difficulty": cs["total_difficulty"] / cs["matches"] if cs["matches"] > 0 else 0,
+			"avg_moves": int(cs["total_moves"] / cs["matches"]) if cs["matches"] > 0 else 0,
+			"avg_difficulty": float(cs["total_difficulty"]) / cs["matches"] if cs["matches"] > 0 else 0.0,
 			"rep_earned": cs["rep_earned"],
 		}
 

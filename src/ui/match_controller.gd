@@ -280,8 +280,21 @@ func _start_match() -> void:
 
 	_match_active = true
 
-	# Tutorial mode: delegate to TutorialSystem
+	# Tutorial mode: delegate to TutorialSystem (skip in autoplay)
 	if _match_type == "tutorial":
+		if debug_autoplay:
+			print("[MATCH] Skipping tutorial in autoplay — auto-completing as win")
+			_match_active = false
+			_last_match_result = {
+				"winner": 1,  # Side.DEFENDER
+				"reason": board_rules.WinReason.KING_ESCAPED,
+				"move_count": 0,
+				"pieces_remaining": { "attacker": 0, "defender": 0 },
+			}
+			await get_tree().create_timer(0.1).timeout
+			if _campaign_mode:
+				_return_to_campaign()
+			return
 		var tutorial: Node = get_node_or_null("/root/TutorialSystem")
 		if tutorial != null:
 			tutorial.tutorial_complete.connect(_on_tutorial_complete, CONNECT_ONE_SHOT)
