@@ -18,6 +18,7 @@ var _opponent_label: Label = null
 var _opponent_desc_label: Label = null
 var _reputation_label: Label = null
 var _progress_label: Label = null
+var _history_label: Label = null
 var _challenge_button: Button = null
 var _status_label: Label = null
 
@@ -132,6 +133,14 @@ func _build_ui() -> void:
 	_reputation_label.add_theme_color_override("font_color", Color(0.8, 0.72, 0.45))
 	vbox.add_child(_reputation_label)
 
+	# Match history
+	_history_label = Label.new()
+	_history_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_history_label.add_theme_font_size_override("font_size", 13)
+	_history_label.add_theme_color_override("font_color", Color(0.5, 0.47, 0.38))
+	_history_label.visible = false
+	vbox.add_child(_history_label)
+
 	_add_spacer(vbox, 15)
 
 	# Challenge button
@@ -208,6 +217,9 @@ func _update_display() -> void:
 		rep = _reputation.get_reputation()
 	_reputation_label.text = "Reputation: %d" % rep
 
+	# Match history summary
+	_update_history_display()
+
 	# Check if chapter is complete
 	if _campaign.is_chapter_complete():
 		if _campaign.can_advance_chapter():
@@ -230,6 +242,30 @@ func _update_display() -> void:
 		_challenge_button.text = "Challenge"
 		_challenge_button.visible = true
 		_status_label.visible = false
+
+
+func _update_history_display() -> void:
+	if _campaign == null:
+		_history_label.visible = false
+		return
+
+	var history: Dictionary = _campaign.match_history
+	if history.is_empty():
+		_history_label.visible = false
+		return
+
+	var total_wins: int = 0
+	var total_losses: int = 0
+	for opponent_id: String in history:
+		var records: Array = history[opponent_id]
+		for record: Dictionary in records:
+			if record.get("result", "") == "win":
+				total_wins += 1
+			elif record.get("result", "") == "loss":
+				total_losses += 1
+
+	_history_label.text = "Record: %dW – %dL" % [total_wins, total_losses]
+	_history_label.visible = true
 
 
 # ---------------------------------------------------------------------------
