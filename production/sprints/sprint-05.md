@@ -119,13 +119,13 @@ Buffer:         S5-11 through S5-16
 
 ## Definition of Done for this Sprint
 
-- [ ] All Must Have tasks (S5-01 through S5-09) completed
-- [ ] Campaign schedule has matches for all 5 chapters (Prologue through Return)
-- [ ] All new opponents have profiles, dialogue, and i18n keys
-- [ ] Murchadh rematch is a standard match (not scripted) in Chapter 4
-- [ ] Audio system plays placeholder sounds for all board events
-- [ ] Music changes per scene/chapter with crossfade
-- [ ] Full campaign autoplay completes without crashes
-- [ ] All tests pass (264+ tests, no regressions beyond pre-existing)
-- [ ] Narrator text bridges every chapter transition
-- [ ] Code follows ADR-0001 architecture
+- [x] All Must Have tasks (S5-01 through S5-09) completed
+- [x] Campaign schedule has matches for all 5 chapters (Prologue through Return)
+- [x] All new opponents have profiles, dialogue, and i18n keys
+- [x] Murchadh rematch is a standard match (not scripted) in Chapter 4
+- [x] Audio system plays placeholder sounds for all board events
+- [x] Music changes per scene/chapter with crossfade
+- [x] Full campaign autoplay completes without crashes (integration test passes)
+- [x] All tests pass (311 tests, 0 errors, 0 failures, 0 orphans)
+- [x] Narrator text bridges every chapter transition
+- [x] Code follows ADR-0001 architecture

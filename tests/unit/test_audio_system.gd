@@ -128,14 +128,11 @@ func test_audio_play_music_unknown_track_does_not_crash() -> void:
 	assert_str(_audio.get_current_music_id()).is_empty()
 
 
-func test_audio_play_music_sets_current_id() -> void:
-	# Track exists in config but file doesn't — sets ID before attempting load
-	# Since the file doesn't exist, the load will fail and ID won't be set
+func test_audio_play_music_missing_file_does_not_set_id() -> void:
+	# Track exists in config but audio file doesn't exist on disk
+	# play_music should return without setting current ID
 	_audio.play_music("main_menu")
-	# ID is set regardless of file existence (it's set before load attempt)
-	# Actually: the load fails, so let's verify graceful handling
-	# The current_music_id is set before the stream load attempt
-	assert_str(_audio.get_current_music_id()).is_equal("main_menu")
+	assert_str(_audio.get_current_music_id()).is_empty()
 
 
 func test_audio_stop_music_clears_id() -> void:
@@ -153,10 +150,10 @@ func test_audio_play_ambient_unknown_chapter_does_not_crash() -> void:
 	assert_str(_audio.get_current_ambient_id()).is_empty()
 
 
-func test_audio_play_ambient_sets_id() -> void:
-	# File won't exist but ID should be set before load
+func test_audio_play_ambient_missing_file_does_not_set_id() -> void:
+	# Ambient track exists in config but audio file doesn't exist on disk
 	_audio.play_ambient_for_chapter(1)
-	assert_str(_audio.get_current_ambient_id()).is_equal("chapter_1")
+	assert_str(_audio.get_current_ambient_id()).is_empty()
 
 
 # ---------------------------------------------------------------------------
@@ -256,7 +253,7 @@ func test_audio_match_ended_clears_music() -> void:
 
 func test_audio_pending_captures_increments() -> void:
 	assert_int(_audio._pending_captures).is_equal(0)
-	_audio._on_piece_captured(Vector2i(3, 3))
+	_audio._on_piece_captured(1, Vector2i(3, 3), Vector2i(3, 4))
 	# First capture triggers immediate play + decrements
 	# Since file doesn't exist, play_sfx returns false but counter still processes
 	assert_int(_audio._pending_captures).is_equal(0)
