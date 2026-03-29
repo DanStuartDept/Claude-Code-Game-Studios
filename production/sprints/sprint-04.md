@@ -1,6 +1,6 @@
 # Sprint 4 — Campaign UI, Tutorial & i18n Groundwork
 
-> **Status**: In Progress
+> **Status**: Complete
 > **Goal**: Polish the campaign experience — proper opponent cards, guided tutorial, and translation-ready dialogue
 > **Milestone**: Alpha (completing final Alpha systems)
 > **Created**: 2026-03-29
@@ -110,4 +110,4 @@ Buffer:        S4-15, S4-16
 - [x] S4-11 + S4-12 + S4-13: i18n system with LocaleSystem, textKey/speakerKey, en.json
 - [x] S4-15: Tutorial narrator styling (uses existing DialogueOverlay narrator path)
 - [x] S4-16: Tutorial unit tests (17 tests)
-- [ ] S4-14: Dialogue phrasing pass (in progress)
+- [x] S4-14: Dialogue phrasing pass — Hiberno-English strengthening across all 46 lines
