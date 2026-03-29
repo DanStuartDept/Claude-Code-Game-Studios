@@ -1,0 +1,81 @@
+{
+  "chapters": [
+    {
+      "index": 0,
+      "name": "Prologue: The Disgrace",
+      "location": "Tara, The High Court",
+      "rep_threshold": 0
+    },
+    {
+      "index": 1,
+      "name": "The West",
+      "location": "Connacht, the wild shore",
+      "rep_threshold": 0
+    },
+    {
+      "index": 2,
+      "name": "The Old Roads",
+      "location": "Munster / Leinster border",
+      "rep_threshold": 15
+    },
+    {
+      "index": 3,
+      "name": "The Midlands",
+      "location": "Heart of Ireland",
+      "rep_threshold": 35
+    },
+    {
+      "index": 4,
+      "name": "The Return",
+      "location": "Leinster, approaching Tara",
+      "rep_threshold": 60
+    }
+  ],
+  "matches": [
+    {
+      "matchId": "ch0_scripted",
+      "chapter": 0,
+      "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/murchadh.tres",
+      "matchType": "scripted",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch1_match1",
+      "chapter": 1,
+      "orderInChapter": 0,
+      "opponentPath": "res://assets/data/opponents/seanan.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch1_match2",
+      "chapter": 1,
+      "orderInChapter": 1,
+      "opponentPath": "res://assets/data/opponents/brigid.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch1_match3",
+      "chapter": 1,
+      "orderInChapter": 2,
+      "opponentPath": "res://assets/data/opponents/tadhg.tres",
+      "matchType": "standard",
+      "isChapterBoss": false,
+      "isFinalBoss": false
+    },
+    {
+      "matchId": "ch1_boss",
+      "chapter": 1,
+      "orderInChapter": 3,
+      "opponentPath": "res://assets/data/opponents/fiachra.tres",
+      "matchType": "standard",
+      "isChapterBoss": true,
+      "isFinalBoss": false
+    }
+  ]
+}

@@ -19,6 +19,7 @@ run/main_scene="res://scenes/menu/MainMenu.tscn"
 SceneManager="*res://src/core/scene_manager.gd"
 BoardRules="*res://src/core/board_rules.gd"
 AISystem="*res://src/core/ai_system.gd"
+CampaignSystem="*res://src/core/campaign_system.gd"
 
 [editor_plugins]
 

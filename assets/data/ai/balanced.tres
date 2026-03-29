@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AIPersonalityData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/ai_personality.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+personality_name = "Balanced"
+w_material = 1.0
+w_king_freedom = 1.0
+w_king_proximity = 1.0
+w_board_control = 1.0
+w_threat = 1.0
+erratic_disruption_chance = 0.0
