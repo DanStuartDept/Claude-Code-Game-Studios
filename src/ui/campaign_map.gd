@@ -790,6 +790,20 @@ func _on_rep_continue() -> void:
 
 
 func _on_post_dialogue_complete() -> void:
+	# Mid-chapter narrator beats (fire once at specific match positions)
+	var mid_narrator_id: String = _get_mid_chapter_narrator()
+	if mid_narrator_id != "":
+		_show_narrator(mid_narrator_id)
+		# After narrator, refresh and continue
+		for child: Node in get_children():
+			if child is DialogueOverlay:
+				child.completed.connect(func() -> void:
+					_refresh_cards()
+					if _autoplay:
+						_autoplay_challenge()
+				)
+				return
+
 	if _campaign.is_chapter_complete():
 		var end_id: String = "narrator_ch%d_end" % _campaign.current_chapter
 		if _campaign.current_chapter == 0:
@@ -813,6 +827,22 @@ func _on_post_dialogue_complete() -> void:
 
 	if _autoplay:
 		_autoplay_challenge()
+
+
+## Returns a mid-chapter narrator line ID if one should fire at the current
+## match position, or empty string if none.
+func _get_mid_chapter_narrator() -> String:
+	if _campaign == null:
+		return ""
+	var ch: int = _campaign.current_chapter
+	var pos: int = _campaign.current_match_in_chapter
+	# Chapter 1: fire after 2nd match (position 2, meaning matches 0 and 1 complete)
+	if ch == 1 and pos == 2:
+		# Only fire once — check if we already showed it
+		if not _campaign.match_history.has("_narrator_ch1_mid"):
+			_campaign.match_history["_narrator_ch1_mid"] = [{"result": "shown"}]
+			return "narrator_ch1_mid"
+	return ""
 
 
 func _show_campaign_victory() -> void:

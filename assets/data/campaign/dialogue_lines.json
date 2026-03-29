@@ -48,6 +48,22 @@
     "textKey": "dialogue.narrator_ch1_start"
   },
   {
+    "id": "narrator_ch1_mid",
+    "opponent_id": "narrator",
+    "timing": null,
+    "encounter": null,
+    "result_history": null,
+    "feud_state": null,
+    "reputation_tier": null,
+    "is_chapter_boss": null,
+    "is_final_boss": null,
+    "match_type": null,
+    "speaker": "",
+    "speakerKey": "speaker.narrator",
+    "text": "Two games played now and the word is getting around. There is a Connacht way of noticing a thing — no one says it straight, but the invitations come quicker and the boards are laid out before I sit down. Fiachra will have heard. He hears everything that moves through his country.",
+    "textKey": "dialogue.narrator_ch1_mid"
+  },
+  {
     "id": "narrator_ch1_end",
     "opponent_id": "narrator",
     "timing": null,
