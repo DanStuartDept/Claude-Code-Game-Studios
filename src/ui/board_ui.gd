@@ -492,6 +492,11 @@ func _handle_release(pos: Vector2) -> void:
 
 
 func _handle_tap(cell: Vector2i) -> void:
+	if _animating:
+		return
+	if _active_side != _player_side:
+		return
+
 	if cell == Vector2i(-1, -1):
 		# Tapped outside board
 		if has_selection():
