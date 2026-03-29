@@ -1,8 +1,6 @@
-## Main Menu — Simple title screen with opponent selection.
+## Main Menu — Title screen with campaign and quick play options.
 ##
-## Launches a match against a selected opponent via SceneManager.
-## See: production/sprints/sprint-01.md (S1-10, S1-16)
-class_name MainMenu
+## See: production/sprints/sprint-02.md (S2-09)
 extends Control
 
 
@@ -18,9 +16,10 @@ func _ready() -> void:
 	vbox.set_anchors_preset(PRESET_CENTER)
 	vbox.offset_left = -120.0
 	vbox.offset_right = 120.0
-	vbox.offset_top = -120.0
-	vbox.offset_bottom = 120.0
+	vbox.offset_top = -140.0
+	vbox.offset_bottom = 140.0
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 8)
 	add_child(vbox)
 
 	var title := Label.new()
@@ -40,34 +39,72 @@ func _ready() -> void:
 	spacer.custom_minimum_size = Vector2(0, 30)
 	vbox.add_child(spacer)
 
-	# Opponent buttons
-	_add_opponent_button(vbox, "Play vs Seanan", "res://assets/data/opponents/seanan.tres")
-	_add_opponent_button(vbox, "Play vs Brigid", "res://assets/data/opponents/brigid.tres")
+	# Campaign button
+	var campaign_button := Button.new()
+	campaign_button.text = "New Campaign"
+	campaign_button.pressed.connect(_on_campaign_pressed)
+	campaign_button.custom_minimum_size = Vector2(200, 50)
+	vbox.add_child(campaign_button)
+
+	var spacer2 := Control.new()
+	spacer2.custom_minimum_size = Vector2(0, 10)
+	vbox.add_child(spacer2)
+
+	# Quick play section
+	var quick_label := Label.new()
+	quick_label.text = "Quick Play"
+	quick_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	quick_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.38))
+	vbox.add_child(quick_label)
+
+	_add_opponent_button(vbox, "vs Seanan", "res://assets/data/opponents/seanan.tres")
+	_add_opponent_button(vbox, "vs Brigid", "res://assets/data/opponents/brigid.tres")
 
 	# Register scenes
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
 	if scene_manager != null:
 		scene_manager.register_scene(&"match", "res://scenes/match/Match.tscn")
 		scene_manager.register_scene(&"menu", "res://scenes/menu/MainMenu.tscn")
+		scene_manager.register_scene(&"campaign_map", "res://scenes/campaign/CampaignMap.tscn")
 
-	# Auto-play: skip menu and go straight to match
+	# Auto-play: skip menu and go straight to campaign
 	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
 		print("[MENU] Auto-play detected, launching match...")
-		_launch_match("res://assets/data/opponents/seanan.tres")
+		_launch_quick_play("res://assets/data/opponents/seanan.tres")
 
 
 func _add_opponent_button(parent: VBoxContainer, text: String, profile_path: String) -> void:
 	var button := Button.new()
 	button.text = text
-	button.pressed.connect(_launch_match.bind(profile_path))
-	button.custom_minimum_size = Vector2(200, 50)
+	button.pressed.connect(_launch_quick_play.bind(profile_path))
+	button.custom_minimum_size = Vector2(200, 40)
 	parent.add_child(button)
 
 
-func _launch_match(profile_path: String) -> void:
+func _on_campaign_pressed() -> void:
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
 	if scene_manager != null:
-		scene_manager.scene_data = { "opponent_profile_path": profile_path }
+		# Reset campaign and reputation for new game
+		var campaign: Node = get_node_or_null("/root/CampaignSystem")
+		if campaign != null:
+			campaign.start_new_campaign()
+		var rep: Node = get_node_or_null("/root/ReputationSystem")
+		if rep != null:
+			rep.reset()
+
+		scene_manager.scene_data = { "show_narrator": true, "narrator_id": "narrator_ch0_start" }
+		visible = false
+		scene_manager.change_scene(&"campaign_map")
+		queue_free()
+
+
+func _launch_quick_play(profile_path: String) -> void:
+	var scene_manager: Node = get_node_or_null("/root/SceneManager")
+	if scene_manager != null:
+		scene_manager.scene_data = {
+			"opponent_profile_path": profile_path,
+			"campaign_mode": false,
+		}
 		visible = false
 		scene_manager.change_scene(&"match")
 		queue_free()

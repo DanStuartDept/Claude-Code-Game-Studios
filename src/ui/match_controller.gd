@@ -55,6 +55,12 @@ var _autoplay_match_count: int = 0
 ## Debug: total matches to auto-play (0 = infinite).
 var _autoplay_max_matches: int = 3
 
+## Whether this match is part of a campaign (affects return behavior).
+var _campaign_mode: bool = false
+
+## Last match result (for passing back to campaign map).
+var _last_match_result: Dictionary = {}
+
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -66,12 +72,14 @@ func _ready() -> void:
 		debug_autoplay = true
 		print("[MATCH] Auto-play mode enabled")
 
-	# Load opponent profile from scene data (set by MainMenu)
+	# Load settings from scene data
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
-	if scene_manager != null and scene_manager.scene_data.has("opponent_profile_path"):
-		var path: String = scene_manager.scene_data["opponent_profile_path"]
-		if ResourceLoader.exists(path):
-			opponent_profile = load(path)
+	if scene_manager != null:
+		if scene_manager.scene_data.has("opponent_profile_path"):
+			var path: String = scene_manager.scene_data["opponent_profile_path"]
+			if ResourceLoader.exists(path):
+				opponent_profile = load(path)
+		_campaign_mode = scene_manager.scene_data.get("campaign_mode", false)
 		scene_manager.scene_data = {}
 
 	_build_ui()
@@ -312,6 +320,7 @@ func _on_match_ended(result: Dictionary) -> void:
 	_match_active = false
 	_ai_thinking = false
 	_ai_thinking_label.visible = false
+	_last_match_result = result
 
 	# Wait for animations to finish
 	if _board_ui.is_animating():
@@ -362,6 +371,10 @@ func _show_result(result: Dictionary) -> void:
 	_result_panel.visible = true
 	_turn_label.text = "Match over"
 
+	# Campaign mode: change button text
+	if _campaign_mode:
+		_play_again_button.text = "Continue"
+
 	# Auto-play: start next match after a brief pause
 	if debug_autoplay:
 		if _autoplay_max_matches > 0 and _autoplay_match_count >= _autoplay_max_matches:
@@ -375,7 +388,17 @@ func _show_result(result: Dictionary) -> void:
 func _on_play_again_pressed() -> void:
 	_result_panel.visible = false
 
-	# Disconnect old signals
+	# Campaign mode: return to campaign map with the result
+	if _campaign_mode and not debug_autoplay:
+		var scene_manager: Node = get_node_or_null("/root/SceneManager")
+		if scene_manager != null:
+			scene_manager.scene_data = { "match_result": _last_match_result }
+			visible = false
+			scene_manager.change_scene(&"campaign_map")
+			queue_free()
+			return
+
+	# Quick play / auto-play: restart match
 	var board_rules: Node = _get_board_rules()
 	if board_rules.turn_changed.is_connected(_on_turn_changed):
 		board_rules.turn_changed.disconnect(_on_turn_changed)
