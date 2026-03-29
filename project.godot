@@ -21,6 +21,7 @@ BoardRules="*res://src/core/board_rules.gd"
 AISystem="*res://src/core/ai_system.gd"
 CampaignSystem="*res://src/core/campaign_system.gd"
 ReputationSystem="*res://src/core/reputation_system.gd"
+DialogueSystem="*res://src/core/dialogue_system.gd"
 
 [editor_plugins]
 
