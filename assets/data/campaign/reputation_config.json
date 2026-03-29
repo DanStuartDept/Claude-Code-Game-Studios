@@ -1,0 +1,20 @@
+{
+  "baseWin": 5,
+  "speedBonus": 2,
+  "speedThresholdMoves": 20,
+  "decisiveBonus": 1,
+  "decisiveThresholdPieces": 5,
+  "feudBonus": 3,
+  "nemesisBonus": 5,
+  "bossBonus": 3,
+  "rematchBonus": 1,
+  "chapterThresholds": [0, 0, 15, 35, 60],
+  "finalBossThreshold": 80,
+  "tierRanges": {
+    "unknown": [0, 10],
+    "emerging": [11, 30],
+    "respected": [31, 55],
+    "feared": [56, 79],
+    "legendary": [80, 9999]
+  }
+}
