@@ -1,0 +1,57 @@
+{
+  "buses": {
+    "music": {
+      "defaultVolume": 0.7
+    },
+    "sfx": {
+      "defaultVolume": 1.0
+    },
+    "ambient": {
+      "defaultVolume": 0.5
+    }
+  },
+  "crossfadeDuration": 1.0,
+  "duckAmount": 0.2,
+  "duckFadeDuration": 0.3,
+  "sfxCaptureGap": 0.1,
+  "sfxEvents": {
+    "piece_moved": "res://assets/audio/sfx/stone_slide.wav",
+    "piece_captured": "res://assets/audio/sfx/stone_impact.wav",
+    "piece_selected": "res://assets/audio/sfx/soft_click.wav",
+    "piece_deselected": "res://assets/audio/sfx/soft_click_quiet.wav",
+    "king_threatened": "res://assets/audio/sfx/warning_tone.wav",
+    "turn_changed": "res://assets/audio/sfx/soft_tick.wav",
+    "match_victory": "res://assets/audio/sfx/victory_sting.wav",
+    "match_defeat": "res://assets/audio/sfx/defeat_sting.wav",
+    "board_setup": "res://assets/audio/sfx/board_set.wav",
+    "dialogue_advance": "res://assets/audio/sfx/page_turn.wav",
+    "ui_click": "res://assets/audio/sfx/ui_click.wav"
+  },
+  "stingVolumes": {
+    "match_victory": 1.0,
+    "match_defeat": 0.8
+  },
+  "musicTracks": {
+    "main_menu": "res://assets/audio/music/main_theme.ogg",
+    "tutorial": "res://assets/audio/music/tutorial.ogg",
+    "match_chapter_0": "res://assets/audio/music/match_prologue.ogg",
+    "match_chapter_1": "res://assets/audio/music/match_ch1.ogg",
+    "match_chapter_2": "res://assets/audio/music/match_ch2.ogg",
+    "match_chapter_3": "res://assets/audio/music/match_ch3.ogg",
+    "match_chapter_4": "res://assets/audio/music/match_ch4.ogg",
+    "match_final_boss": "res://assets/audio/music/match_final_boss.ogg",
+    "campaign_chapter_0": "res://assets/audio/music/campaign_prologue.ogg",
+    "campaign_chapter_1": "res://assets/audio/music/campaign_ch1.ogg",
+    "campaign_chapter_2": "res://assets/audio/music/campaign_ch2.ogg",
+    "campaign_chapter_3": "res://assets/audio/music/campaign_ch3.ogg",
+    "campaign_chapter_4": "res://assets/audio/music/campaign_ch4.ogg",
+    "credits": "res://assets/audio/music/credits.ogg"
+  },
+  "ambientTracks": {
+    "chapter_0": "res://assets/audio/ambient/tara_court.ogg",
+    "chapter_1": "res://assets/audio/ambient/connacht_coast.ogg",
+    "chapter_2": "res://assets/audio/ambient/old_roads.ogg",
+    "chapter_3": "res://assets/audio/ambient/midlands.ogg",
+    "chapter_4": "res://assets/audio/ambient/tara_return.ogg"
+  }
+}

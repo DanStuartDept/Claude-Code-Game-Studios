@@ -159,6 +159,11 @@ func load_game() -> bool:
 	if feud != null and data.has("feud"):
 		feud.load_feud_data(data.feud)
 
+	# Restore audio settings
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null and data.has("audio_volumes"):
+		audio.restore_volumes(data.audio_volumes)
+
 	game_loaded.emit()
 	return true
 
@@ -203,6 +208,11 @@ func _build_save_data() -> Dictionary:
 	var feud: Node = get_node_or_null("/root/FeudSystem")
 	if feud != null:
 		data["feud"] = feud.get_all_feud_data()
+
+	# Audio settings
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null:
+		data["audio_volumes"] = audio.get_all_volumes()
 
 	return data
 
