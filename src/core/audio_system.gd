@@ -388,25 +388,41 @@ func is_music_ducked() -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Public API — Board UI wiring
+# ---------------------------------------------------------------------------
+
+## Connect to a BoardUI instance for piece select/deselect SFX.
+## Call this when a match scene creates its BoardUI.
+##
+## Usage:
+##   AudioSystem.connect_board_ui(board_ui_node)
+func connect_board_ui(board_ui: Node) -> void:
+	if board_ui.has_signal("piece_selected"):
+		board_ui.piece_selected.connect(_on_piece_selected)
+	if board_ui.has_signal("piece_deselected"):
+		board_ui.piece_deselected.connect(_on_piece_deselected)
+
+
+# ---------------------------------------------------------------------------
 # Signal handlers — Board Rules Engine
 # ---------------------------------------------------------------------------
 
-func _on_piece_moved(_from: Vector2i, _to: Vector2i) -> void:
+func _on_piece_moved(_piece_type: int, _from: Vector2i, _to: Vector2i) -> void:
 	play_sfx("piece_moved")
 
 
-func _on_piece_captured(_pos: Vector2i, _capturing_piece: Variant = null) -> void:
+func _on_piece_captured(_piece_type: int, _position: Vector2i, _captured_by: Vector2i) -> void:
 	# Queue sequential captures with gap
 	_pending_captures += 1
 	if _pending_captures == 1:
 		_play_capture_sequence()
 
 
-func _on_king_threatened(_pos: Vector2i) -> void:
+func _on_king_threatened(_king_pos: Vector2i, _threat_count: int) -> void:
 	play_sfx("king_threatened")
 
 
-func _on_turn_changed(_turn: Variant = null) -> void:
+func _on_turn_changed(_new_active_side: int) -> void:
 	play_sfx("turn_changed")
 
 
@@ -418,6 +434,18 @@ func _on_match_ended(result: Dictionary) -> void:
 		play_sfx("match_victory")
 	else:
 		play_sfx("match_defeat")
+
+
+# ---------------------------------------------------------------------------
+# Signal handlers — Board UI
+# ---------------------------------------------------------------------------
+
+func _on_piece_selected(_cell: Vector2i) -> void:
+	play_sfx("piece_selected")
+
+
+func _on_piece_deselected() -> void:
+	play_sfx("piece_deselected")
 
 
 # ---------------------------------------------------------------------------

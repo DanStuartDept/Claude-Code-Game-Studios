@@ -237,6 +237,22 @@ func _start_match() -> void:
 		config = load("res://assets/data/ui/default_board_ui.tres")
 	_board_ui.configure(board_rules, config)
 
+	# Wire Board UI to Audio System for piece select/deselect SFX
+	# and start chapter-appropriate match music + ambient
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null:
+		audio.connect_board_ui(_board_ui)
+		var campaign: Node = get_node_or_null("/root/CampaignSystem")
+		if campaign != null:
+			var chapter_idx: int = campaign.current_chapter
+			var is_final_boss: bool = _match_type == "standard" and chapter_idx == 4 and opponent_profile != null and opponent_profile.character_name == "Murchadh"
+			if is_final_boss:
+				audio.play_music("match_final_boss")
+			else:
+				audio.play_music("match_chapter_%d" % chapter_idx)
+			audio.play_ambient_for_chapter(chapter_idx)
+		audio.play_sfx("board_setup")
+
 	# Connect match signals
 	board_rules.turn_changed.connect(_on_turn_changed)
 	board_rules.match_ended.connect(_on_match_ended)
