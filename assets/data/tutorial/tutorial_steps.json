@@ -1,0 +1,151 @@
+{
+  "description": "Tutorial data for the Prologue match 1. Defines the simplified board layout and 8 guided steps teaching movement, capture, and King escape. See design/gdd/tutorial-system.md.",
+  "boardLayout": {
+    "boardSize": 7,
+    "king": [3, 3],
+    "defenders": [
+      [3, 1],
+      [1, 3],
+      [5, 3],
+      [3, 5],
+      [4, 2]
+    ],
+    "attackers": [
+      [2, 5],
+      [5, 2],
+      [3, 0],
+      [0, 4],
+      [3, 6],
+      [6, 3],
+      [6, 1],
+      [1, 6]
+    ]
+  },
+  "turnNotes": "Tutorial bypasses normal turn alternation. Each step specifies activeSide for the player action and/or AI action. The tutorial system must set BoardRules._active_side before each submit_move call.",
+  "steps": [
+    {
+      "step": 1,
+      "concept": "introduction",
+      "narratorText": "The board is set. You are the Defender — your pieces are the light stones. The tall one in the centre is the King.",
+      "narratorTextKey": "dialogue.tutorial_step_1",
+      "playerAction": null,
+      "aiAction": null
+    },
+    {
+      "step": 2,
+      "concept": "movement",
+      "narratorText": "Pieces move in straight lines — up, down, left, right. As far as the path is clear. Tap the piece I have marked, then tap where you would like it to go.",
+      "narratorTextKey": "dialogue.tutorial_step_2",
+      "playerAction": {
+        "activeSide": "defender",
+        "allowedPieces": [[3, 1]],
+        "forcedHighlights": [[1, 1]],
+        "expectedMove": {
+          "from": [3, 1],
+          "to": [1, 1]
+        }
+      },
+      "aiAction": {
+        "activeSide": "attacker",
+        "from": [6, 1],
+        "to": [4, 1]
+      }
+    },
+    {
+      "step": 3,
+      "concept": "restricted_tiles",
+      "narratorText": "The centre square — the Throne — and the four corners are special. Only the King may enter them.",
+      "narratorTextKey": "dialogue.tutorial_step_3",
+      "playerAction": {
+        "activeSide": "defender",
+        "allowedPieces": [[5, 3]],
+        "forcedHighlights": [[5, 5]],
+        "expectedMove": {
+          "from": [5, 3],
+          "to": [5, 5]
+        }
+      },
+      "aiAction": {
+        "activeSide": "attacker",
+        "from": [0, 4],
+        "to": [2, 4]
+      }
+    },
+    {
+      "step": 4,
+      "concept": "custodial_capture",
+      "narratorText": "When you trap an enemy piece between two of yours, it is taken. Move here — watch.",
+      "narratorTextKey": "dialogue.tutorial_step_4",
+      "playerAction": {
+        "activeSide": "defender",
+        "allowedPieces": [[1, 3]],
+        "forcedHighlights": [[1, 5]],
+        "expectedMove": {
+          "from": [1, 3],
+          "to": [1, 5]
+        },
+        "expectedCapture": [2, 5]
+      },
+      "aiAction": {
+        "activeSide": "attacker",
+        "from": [6, 3],
+        "to": [6, 1]
+      }
+    },
+    {
+      "step": 5,
+      "concept": "being_captured",
+      "narratorText": "But your pieces can be trapped the same way. Be careful where you leave them.",
+      "narratorTextKey": "dialogue.tutorial_step_5",
+      "narratorTextAfter": "Like that.",
+      "narratorTextAfterKey": "dialogue.tutorial_step_5_after",
+      "playerAction": null,
+      "aiAction": {
+        "activeSide": "attacker",
+        "from": [3, 0],
+        "to": [3, 2],
+        "expectedCapture": [4, 2]
+      }
+    },
+    {
+      "step": 6,
+      "concept": "king_importance",
+      "narratorText": "The King must escape to any corner of the board. That is how you win. But if the enemy surrounds him on all four sides, you lose. They are closing in — move your King.",
+      "narratorTextKey": "dialogue.tutorial_step_6",
+      "playerAction": {
+        "activeSide": "defender",
+        "allowedPieces": [[3, 3]],
+        "forcedHighlights": [[0, 3]],
+        "expectedMove": {
+          "from": [3, 3],
+          "to": [0, 3]
+        }
+      },
+      "aiAction": null
+    },
+    {
+      "step": 7,
+      "concept": "king_escape",
+      "narratorText": "The path is open. Move the King to the corner.",
+      "narratorTextKey": "dialogue.tutorial_step_7",
+      "playerAction": {
+        "activeSide": "defender",
+        "allowedPieces": [[0, 3]],
+        "forcedHighlights": [[0, 0]],
+        "expectedMove": {
+          "from": [0, 3],
+          "to": [0, 0]
+        }
+      },
+      "aiAction": null
+    },
+    {
+      "step": 8,
+      "concept": "victory",
+      "narratorText": "The King has escaped. You understand the shape of it now. The rest you will learn by playing.",
+      "narratorTextKey": "dialogue.tutorial_step_8",
+      "playerAction": null,
+      "aiAction": null
+    }
+  ]
+}
