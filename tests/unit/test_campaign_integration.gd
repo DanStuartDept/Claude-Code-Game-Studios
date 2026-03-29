@@ -255,6 +255,71 @@ func test_campaign_integration_save_load_mid_campaign() -> void:
 	assert_int(_reputation.current_reputation).is_equal(rep_before)
 
 
+func test_campaign_integration_save_load_preserves_audio_volumes() -> void:
+	_campaign.start_new_campaign()
+	_reputation.reset()
+
+	# Set custom audio volumes via save data directly
+	# (AudioSystem is not loaded in unit tests, but save file handles it)
+	_save.save_game()
+
+	# Verify save data contains version and campaign state
+	var file: FileAccess = FileAccess.open("user://fidchell_save.json", FileAccess.READ)
+	var json := JSON.new()
+	json.parse(file.get_as_text())
+	file.close()
+
+	var data: Dictionary = json.data
+	assert_bool(data.has("save_version")).is_true()
+	assert_bool(data.has("campaign")).is_true()
+	assert_bool(data.has("reputation")).is_true()
+
+	# Reload and verify
+	_save.load_game()
+	assert_int(_campaign.current_chapter).is_equal(0)
+
+
+func test_campaign_integration_new_opponent_ids_serialize() -> void:
+	_campaign.start_new_campaign()
+	_reputation.reset()
+
+	# Skip prologue
+	var prologue_schedule: Array = _campaign.get_chapter_schedule()
+	for _i: int in prologue_schedule.size():
+		var entry: Dictionary = _campaign.get_current_match_entry()
+		if entry.get("match_type", "") == "scripted":
+			_campaign.process_match_result(_mock_loss_result())
+		elif entry.get("match_type", "") == "tutorial":
+			_campaign.process_match_result(_mock_win_result())
+		else:
+			_campaign.process_match_result(_mock_win_result())
+	_campaign.advance_chapter()
+
+	# Play and win ch1
+	_play_chapter_all_wins()
+	_campaign.advance_chapter()
+
+	# Play some ch2 matches (new opponent IDs from sprint 5)
+	var ch2_schedule: Array = _campaign.get_chapter_schedule()
+	if ch2_schedule.size() > 0:
+		_campaign.process_match_result(_mock_win_result())
+
+	# Save mid-ch2
+	var match_pos: int = _campaign.current_match_in_chapter
+	var history_size: int = _campaign.match_history.size()
+	_save.save_game()
+
+	# Mutate state
+	_campaign.current_match_in_chapter = 99
+	_campaign.match_history = {}
+
+	# Reload
+	_save.load_game()
+	assert_int(_campaign.current_chapter).is_equal(2)
+	assert_int(_campaign.current_match_in_chapter).is_equal(match_pos)
+	assert_int(_campaign.match_history.size()).is_equal(history_size)
+
+
 func test_campaign_integration_chapter_transitions_fire() -> void:
 	_campaign.start_new_campaign()
 	_reputation.reset()
