@@ -658,7 +658,7 @@ func _play_capture_sequence() -> void:
 
 func _scene_to_music_track(scene_key: StringName) -> String:
 	match scene_key:
-		&"main_menu", &"splash":
+		&"menu", &"main_menu", &"splash":
 			return "main_menu"
 		&"tutorial":
 			return "tutorial"

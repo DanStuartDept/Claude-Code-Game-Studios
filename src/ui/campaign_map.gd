@@ -92,6 +92,13 @@ func _ready() -> void:
 
 	_build_ui()
 
+	# Start chapter-appropriate ambient and campaign music
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null and _campaign != null:
+		var chapter_idx: int = _campaign.current_chapter
+		audio.play_ambient_for_chapter(chapter_idx)
+		audio.play_music("campaign_chapter_%d" % chapter_idx)
+
 	# Start new campaign if not active
 	if _campaign != null and not _campaign.campaign_active:
 		_campaign.start_new_campaign()

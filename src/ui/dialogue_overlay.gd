@@ -54,6 +54,11 @@ func _ready() -> void:
 	_locale_system = get_node_or_null("/root/LocaleSystem")
 	_build_ui()
 
+	# Duck music while dialogue is visible
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null:
+		audio.duck_music()
+
 	if _dialogue_system != null and _dialogue_system.is_active():
 		_show_current_line()
 
@@ -134,6 +139,9 @@ func _handle_tap() -> void:
 
 	var has_more: bool = _dialogue_system.advance()
 	if has_more:
+		var audio: Node = get_node_or_null("/root/AudioSystem")
+		if audio != null:
+			audio.play_sfx("dialogue_advance")
 		_show_current_line()
 	else:
 		_dismiss()
@@ -219,6 +227,10 @@ func _apply_character_style(speaker: String, opponent_id: String) -> void:
 
 
 func _dismiss() -> void:
+	# Restore music volume after dialogue
+	var audio: Node = get_node_or_null("/root/AudioSystem")
+	if audio != null:
+		audio.unduck_music()
 	completed.emit()
 	queue_free()
 
