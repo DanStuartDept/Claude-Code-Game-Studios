@@ -233,10 +233,15 @@ func _start_match() -> void:
 			_player_ai._mistake_chance = 0.5
 			print("[MATCH] Scripted: Attacker AI difficulty 3 Tactical, Defender AI difficulty 1 Erratic (50%% mistakes)")
 		else:
-			_player_ai.configure(board_rules, player_side, 2, _player_ai.Personality.BALANCED)
-			_player_ai._mistake_chance = 0.15
-			print("[MATCH] Player AI: difficulty 2, Balanced")
-			print("[MATCH] Opponent AI: difficulty 1, Erratic")
+			# Scale player AI difficulty by chapter to simulate a learning player
+			var campaign: Node = get_node_or_null("/root/CampaignSystem")
+			var chapter_idx: int = campaign.current_chapter if campaign != null else 0
+			var player_difficulty: int = clampi(chapter_idx + 1, 1, 5)
+			var player_mistake: float = maxf(0.20 - chapter_idx * 0.03, 0.05)
+			_player_ai.configure(board_rules, player_side, player_difficulty, _player_ai.Personality.BALANCED)
+			_player_ai._mistake_chance = player_mistake
+			print("[MATCH] Player AI: difficulty %d, Balanced (mistakes %.0f%%)" % [player_difficulty, player_mistake * 100])
+			print("[MATCH] Opponent AI: %s" % (opponent_profile.character_name if opponent_profile != null else "default"))
 
 	# Configure Board UI
 	var config: Resource = null
