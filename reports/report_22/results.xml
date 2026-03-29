@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites id="2026-03-29" name="report_22" tests="11" failures="0" skipped="0" flaky="0" time="0.000">
+	<testsuite id="0" name="test_match_integration" package="tests/unit" timestamp="2026-03-29T08:38:04" hostname="localhost" tests="11" failures="0" errors="0" skipped="0" flaky="0" time="0.127">
+		<testcase name="test_ai_returns_valid_move_in_match" classname="test_match_integration" time="0.008">
+		</testcase>
+		<testcase name="test_ai_move_triggers_turn_change" classname="test_match_integration" time="0.014">
+		</testcase>
+		<testcase name="test_board_ui_updates_on_move" classname="test_match_integration" time="0.010">
+		</testcase>
+		<testcase name="test_king_escape_ends_match" classname="test_match_integration" time="0.001">
+		</testcase>
+		<testcase name="test_king_capture_ends_match" classname="test_match_integration" time="0.007">
+		</testcase>
+		<testcase name="test_multiple_turns_alternate_sides" classname="test_match_integration" time="0.008">
+		</testcase>
+		<testcase name="test_ai_vs_ai_completes_match" classname="test_match_integration" time="0.043">
+		</testcase>
+		<testcase name="test_opponent_profile_applies_to_ai" classname="test_match_integration" time="0.011">
+		</testcase>
+		<testcase name="test_match_ended_signal_has_result_data" classname="test_match_integration" time="0.000">
+		</testcase>
+		<testcase name="test_match_scene_exists" classname="test_match_integration" time="0.008">
+		</testcase>
+		<testcase name="test_menu_scene_exists" classname="test_match_integration" time="0.006">
+		</testcase>
+	</testsuite>
+</testsuites>

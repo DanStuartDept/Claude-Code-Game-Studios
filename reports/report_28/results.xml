@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites id="2026-03-29" name="report_28" tests="18" failures="1" skipped="0" flaky="0" time="0.000">
+	<testsuite id="0" name="test_dialogue_system" package="tests/unit" timestamp="2026-03-29T14:12:06" hostname="localhost" tests="18" failures="1" errors="1" skipped="0" flaky="0" time="0.047">
+		<testcase name="test_dialogue_select_generic_wildcard_matches" classname="test_dialogue_system" time="0.008">
+		</testcase>
+		<testcase name="test_dialogue_select_specific_opponent_beats_generic" classname="test_dialogue_system" time="0.001">
+		</testcase>
+		<testcase name="test_dialogue_most_specific_match_wins" classname="test_dialogue_system" time="0.000">
+		</testcase>
+		<testcase name="test_dialogue_multi_line_same_specificity_returned" classname="test_dialogue_system" time="0.009">
+		</testcase>
+		<testcase name="test_dialogue_null_tag_in_line_matches_anything" classname="test_dialogue_system" time="0.004">
+		</testcase>
+		<testcase name="test_dialogue_empty_string_tag_treated_as_wildcard" classname="test_dialogue_system" time="0.009">
+		</testcase>
+		<testcase name="test_dialogue_bool_context_matches_string_line" classname="test_dialogue_system" time="0.005">
+			<error message="ERROR: res://tests/unit/test_dialogue_system.gd:187" type="ABORT">
+<![CDATA[
+Godot Runtime Error !
+Error: 'Invalid operands 'String' and 'bool' in operator '=='.'
+	at res://src/core/dialogue_system.gd:194
+	at res://src/core/dialogue_system.gd:176
+	at res://tests/unit/test_dialogue_system.gd:187
+]]>
+			</error>
+			<failure message="FAILED: res://tests/unit/test_dialogue_system.gd:193" type="FAILURE">
+<![CDATA[
+Expecting: 'true' but is 'false'
+]]>
+			</failure>
+		</testcase>
+	</testsuite>
+</testsuites>

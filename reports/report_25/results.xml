@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites id="2026-03-29" name="report_25" tests="21" failures="0" skipped="0" flaky="0" time="0.000">
+	<testsuite id="0" name="test_board_rules" package="tests/unit" timestamp="2026-03-29T14:07:05" hostname="localhost" tests="21" failures="0" errors="0" skipped="0" flaky="0" time="0.151">
+		<testcase name="test_01_starting_layout" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_02_orthogonal_movement_and_blocking" classname="test_board_rules" time="0.000">
+		</testcase>
+		<testcase name="test_03_restricted_tiles_for_non_king" classname="test_board_rules" time="0.001">
+		</testcase>
+		<testcase name="test_04_king_enters_throne_and_corners" classname="test_board_rules" time="0.008">
+		</testcase>
+		<testcase name="test_05_custodial_capture" classname="test_board_rules" time="0.005">
+		</testcase>
+		<testcase name="test_06_voluntary_sandwich_no_capture" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_07_multi_capture" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_08_hostile_tiles_for_capture" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_09_king_four_sided_capture" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_10_king_on_throne_not_captured_at_three_sides" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_11_king_escape_to_corner" classname="test_board_rules" time="0.008">
+		</testcase>
+		<testcase name="test_12_king_fully_surrounded" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_13_no_legal_moves_loss" classname="test_board_rules" time="0.008">
+		</testcase>
+		<testcase name="test_14_win_halts_game" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_15_legal_moves_correctness" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_16_signals_emit_correctly" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_16b_match_ended_signal" classname="test_board_rules" time="0.006">
+		</testcase>
+		<testcase name="test_16c_king_threatened_signal" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_17_scripted_mode" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_18_side_assignment" classname="test_board_rules" time="0.007">
+		</testcase>
+		<testcase name="test_19_data_externalized" classname="test_board_rules" time="0.007">
+		</testcase>
+	</testsuite>
+</testsuites>

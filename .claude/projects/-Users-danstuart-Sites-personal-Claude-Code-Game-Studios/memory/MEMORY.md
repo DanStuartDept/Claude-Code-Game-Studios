@@ -1,0 +1,1 @@
+- [Work autonomously](feedback_autonomous.md) — build/test/commit without asking, only stop if blocked

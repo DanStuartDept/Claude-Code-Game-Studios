@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites id="2026-03-29" name="report_27" tests="22" failures="0" skipped="0" flaky="0" time="0.000">
+	<testsuite id="0" name="test_reputation_system" package="tests/unit" timestamp="2026-03-29T14:10:40" hostname="localhost" tests="22" failures="0" errors="0" skipped="0" flaky="0" time="0.155">
+		<testcase name="test_reputation_award_base_win_adds_five" classname="test_reputation_system" time="0.012">
+		</testcase>
+		<testcase name="test_reputation_speed_bonus_awarded_under_threshold" classname="test_reputation_system" time="0.001">
+		</testcase>
+		<testcase name="test_reputation_speed_bonus_awarded_at_threshold" classname="test_reputation_system" time="0.001">
+		</testcase>
+		<testcase name="test_reputation_speed_bonus_not_awarded_over_threshold" classname="test_reputation_system" time="0.009">
+		</testcase>
+		<testcase name="test_reputation_decisive_bonus_awarded_at_threshold" classname="test_reputation_system" time="0.005">
+		</testcase>
+		<testcase name="test_reputation_decisive_bonus_not_awarded_below_threshold" classname="test_reputation_system" time="0.007">
+		</testcase>
+		<testcase name="test_reputation_boss_bonus_awarded" classname="test_reputation_system" time="0.006">
+		</testcase>
+		<testcase name="test_reputation_boss_bonus_not_awarded_for_normal_match" classname="test_reputation_system" time="0.005">
+		</testcase>
+		<testcase name="test_reputation_feud_bonus_awarded" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_nemesis_bonus_awarded" classname="test_reputation_system" time="0.006">
+		</testcase>
+		<testcase name="test_reputation_rematch_bonus_awarded" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_all_bonuses_stack" classname="test_reputation_system" time="0.006">
+		</testcase>
+		<testcase name="test_reputation_accumulates_across_wins" classname="test_reputation_system" time="0.007">
+		</testcase>
+		<testcase name="test_reputation_tier_unknown_at_zero" classname="test_reputation_system" time="0.006">
+		</testcase>
+		<testcase name="test_reputation_tier_boundaries" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_chapter_thresholds" classname="test_reputation_system" time="0.006">
+		</testcase>
+		<testcase name="test_reputation_chapter_threshold_out_of_range_returns_zero" classname="test_reputation_system" time="0.005">
+		</testcase>
+		<testcase name="test_reputation_reset_clears_score_and_history" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_save_load_round_trip" classname="test_reputation_system" time="0.005">
+		</testcase>
+		<testcase name="test_reputation_changed_signal_emits" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_get_last_award_returns_most_recent" classname="test_reputation_system" time="0.008">
+		</testcase>
+		<testcase name="test_reputation_get_next_threshold_at_zero" classname="test_reputation_system" time="0.006">
+		</testcase>
+	</testsuite>
+</testsuites>
