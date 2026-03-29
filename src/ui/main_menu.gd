@@ -111,9 +111,35 @@ func _populate_opponent_buttons(parent: VBoxContainer) -> void:
 
 
 func _on_campaign_pressed() -> void:
+	var save: Node = get_node_or_null("/root/SaveSystem")
+	if save != null and save.has_save():
+		_show_new_game_confirmation()
+	else:
+		_start_new_campaign()
+
+
+func _show_new_game_confirmation() -> void:
+	var dialog := ConfirmationDialog.new()
+	dialog.dialog_text = "Starting a new game will erase your current journey. Are you sure?"
+	dialog.ok_button_text = "New Game"
+	dialog.cancel_button_text = "Cancel"
+	dialog.confirmed.connect(_on_new_game_confirmed.bind(dialog))
+	dialog.canceled.connect(func() -> void: dialog.queue_free())
+	add_child(dialog)
+	dialog.popup_centered()
+
+
+func _on_new_game_confirmed(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	var save: Node = get_node_or_null("/root/SaveSystem")
+	if save != null:
+		save.delete_save()
+	_start_new_campaign()
+
+
+func _start_new_campaign() -> void:
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
 	if scene_manager != null:
-		# Reset campaign and reputation for new game
 		var campaign: Node = get_node_or_null("/root/CampaignSystem")
 		if campaign != null:
 			campaign.start_new_campaign()
