@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BoardUIConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/board_ui_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+min_tap_target = 44.0
+max_cell_size = 100.0
+ui_margin = 120.0
+grid_line_width = 1.5
+board_border_width = 3.0
+piece_radius_fraction = 0.35
+king_radius_fraction = 0.40
+piece_outline_width = 2.0
+move_anim_duration = 0.25
+capture_anim_duration = 0.3
+multi_capture_gap = 0.1
+drag_hold_threshold_ms = 150
+result_pause_duration = 0.5
+last_move_highlight_opacity = 0.3
