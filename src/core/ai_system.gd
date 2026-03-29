@@ -1,8 +1,8 @@
 ## AI System — Autoload Singleton
 ##
 ## Two-layer AI for Fidchell: core evaluator (minimax + alpha-beta pruning)
-## and personality layer (S1-05). This file implements the core evaluator.
-## Consumes board state from BoardRules, returns chosen moves.
+## and personality layer. Consumes board state from BoardRules, returns chosen moves.
+## Core evaluator scores positions, personality layer reweights, difficulty injects mistakes.
 ##
 ## Architecture: Core Layer (ADR-0001). Depends on Board Rules Engine.
 ## See: design/gdd/ai-system.md
@@ -27,6 +27,60 @@ var computation_time_budget_ms: int = 200
 
 ## Terminal position score magnitude.
 const TERMINAL_SCORE: float = 10000.0
+
+
+# --- Personality Types ---
+
+enum Personality { BALANCED, DEFENSIVE, AGGRESSIVE, TACTICAL, ERRATIC }
+
+## Personality weight profiles: { material, king_freedom, king_proximity, board_control, threat }
+const PERSONALITY_WEIGHTS: Dictionary = {
+	Personality.BALANCED:   { "material": 1.0, "king_freedom": 1.0, "king_proximity": 1.0, "board_control": 1.0, "threat": 1.0 },
+	Personality.DEFENSIVE:  { "material": 0.8, "king_freedom": 1.5, "king_proximity": 0.7, "board_control": 1.2, "threat": 0.6 },
+	Personality.AGGRESSIVE: { "material": 1.3, "king_freedom": 0.7, "king_proximity": 1.4, "board_control": 0.8, "threat": 1.5 },
+	Personality.TACTICAL:   { "material": 1.0, "king_freedom": 1.0, "king_proximity": 0.8, "board_control": 1.3, "threat": 1.4 },
+	Personality.ERRATIC:    { "material": 1.0, "king_freedom": 1.0, "king_proximity": 1.0, "board_control": 1.0, "threat": 1.0 },
+}
+
+
+# --- Difficulty Tables ---
+
+## Search depth per difficulty level (1-7).
+const DEPTH_TABLE: Array[int] = [1, 1, 2, 2, 3, 4, 5]
+
+## Mistake chance per difficulty level (1-7).
+const MISTAKE_CHANCE_TABLE: Array[float] = [0.35, 0.25, 0.18, 0.12, 0.06, 0.02, 0.0]
+
+## Mistake pool fraction per difficulty level (1-7) — how deep into ranked list.
+const MISTAKE_POOL_TABLE: Array[float] = [0.6, 0.5, 0.4, 0.3, 0.3, 0.3, 0.0]
+
+## Think time min per difficulty level (1-7) in seconds.
+const THINK_TIME_MIN_TABLE: Array[float] = [0.5, 0.5, 1.0, 1.0, 1.5, 1.5, 2.0]
+
+## Think time max per difficulty level (1-7) in seconds.
+const THINK_TIME_MAX_TABLE: Array[float] = [1.5, 1.5, 2.0, 2.0, 3.0, 3.0, 4.0]
+
+## Chance for erratic personality to swap top move with a random top-50% move.
+var erratic_disruption_chance: float = 0.30
+
+
+# --- Difficulty / Personality State ---
+
+## Current difficulty level (1-7).
+var difficulty: int = 1
+
+## Current personality type.
+var personality: int = Personality.BALANCED
+
+## Mistake chance for current difficulty.
+var _mistake_chance: float = 0.35
+
+## Mistake pool fraction for current difficulty.
+var _mistake_pool_fraction: float = 0.6
+
+## Think time range for current difficulty.
+var _think_time_min: float = 0.5
+var _think_time_max: float = 1.5
 
 
 # --- Internal State ---
@@ -62,13 +116,54 @@ var _WIN_NO_LEGAL_MOVES: int = -1
 # --- Public API ---
 
 ## Configure the AI with a board rules reference and side assignment.
+## Optionally set difficulty (1-7) and personality type.
 ##
 ## Usage:
 ##   ai_system.configure(board_rules_node, BoardRules.Side.ATTACKER)
-func configure(board_rules: Node, ai_side: int) -> void:
+##   ai_system.configure(board_rules_node, BoardRules.Side.ATTACKER, 3, AISystem.Personality.DEFENSIVE)
+func configure(board_rules: Node, ai_side: int, p_difficulty: int = -1, p_personality: int = -1) -> void:
 	_board_rules = board_rules
 	_ai_side = ai_side
 	_cache_enums()
+	if p_difficulty >= 1:
+		apply_difficulty(p_difficulty)
+	if p_personality >= 0:
+		apply_personality(p_personality)
+
+
+## Apply a difficulty level (1-7). Sets search depth, mistake chance, and think time.
+##
+## Usage:
+##   ai_system.apply_difficulty(3)
+func apply_difficulty(level: int) -> void:
+	difficulty = clampi(level, 1, 7)
+	var idx := difficulty - 1
+	search_depth = DEPTH_TABLE[idx]
+	_mistake_chance = MISTAKE_CHANCE_TABLE[idx]
+	_mistake_pool_fraction = MISTAKE_POOL_TABLE[idx]
+	_think_time_min = THINK_TIME_MIN_TABLE[idx]
+	_think_time_max = THINK_TIME_MAX_TABLE[idx]
+
+
+## Apply a personality type. Adjusts evaluation weights.
+##
+## Usage:
+##   ai_system.apply_personality(AISystem.Personality.AGGRESSIVE)
+func apply_personality(p_type: int) -> void:
+	personality = p_type
+	if PERSONALITY_WEIGHTS.has(p_type):
+		var weights: Dictionary = PERSONALITY_WEIGHTS[p_type]
+		w_material = weights.material
+		w_king_freedom = weights.king_freedom
+		w_king_proximity = weights.king_proximity
+		w_board_control = weights.board_control
+		w_threat = weights.threat
+
+
+## Return the think time (seconds) for the current difficulty.
+## Randomized between min and max for natural feel.
+func get_think_time() -> float:
+	return randf_range(_think_time_min, _think_time_max)
 
 
 ## Select the best move for the AI's side using minimax with alpha-beta pruning
@@ -93,26 +188,29 @@ func select_move() -> Dictionary:
 	if legal_moves.size() == 1:
 		return legal_moves[0]
 
-	# Iterative deepening with time budget
+	# --- Layer 1: Core Evaluator — score all moves via iterative deepening ---
 	_computation_start_ms = Time.get_ticks_msec()
 	_budget_exceeded = false
-	_best_move_so_far = legal_moves[0]  # Fallback: first legal move
+
+	# Score each move: Array of { move: Dictionary, score: float }
+	var scored_moves: Array[Dictionary] = []
+	for move in legal_moves:
+		scored_moves.append({"move": move, "score": -INF})
+
+	# Set initial fallback
+	_best_move_so_far = legal_moves[0]
 
 	for depth in range(1, search_depth + 1):
 		if _budget_exceeded:
 			break
 
-		var best_score := -INF
-		var best_move: Dictionary = {}
-
-		# Order moves for better pruning
 		var ordered_moves := _order_moves(legal_moves)
 
-		for move in ordered_moves:
+		for i in ordered_moves.size():
 			if _check_budget():
 				break
 
-			# Simulate the move
+			var move: Dictionary = ordered_moves[i]
 			var sim := _simulate_move(move.from, move.to)
 
 			var score: float
@@ -121,17 +219,29 @@ func select_move() -> Dictionary:
 			else:
 				score = _minimax(depth - 1, false, -INF, INF, 1)
 
-			# Undo the move
 			_undo_move(sim)
 
-			if score > best_score:
-				best_score = score
-				best_move = move
+			# Update score for this move in scored_moves
+			for entry in scored_moves:
+				if entry.move.from == move.from and entry.move.to == move.to:
+					entry.score = score
+					break
 
-		if not _budget_exceeded and not best_move.is_empty():
-			_best_move_so_far = best_move
+		if not _budget_exceeded:
+			# Sort by score descending after each completed depth
+			scored_moves.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				return a.score > b.score
+			)
+			_best_move_so_far = scored_moves[0].move
 
-	return _best_move_so_far
+	# Ensure sorted after final depth
+	scored_moves.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return a.score > b.score
+	)
+
+	# --- Layer 2: Personality post-processing ---
+	var selected: Dictionary = _apply_personality_and_difficulty(scored_moves)
+	return selected
 
 
 ## Evaluate a board position from the AI's perspective. Returns a float score.
@@ -143,6 +253,44 @@ func evaluate_position() -> float:
 ## Return whether the time budget was exceeded during the last select_move() call.
 func was_budget_exceeded() -> bool:
 	return _budget_exceeded
+
+
+# --- Internal: Personality & Difficulty ---
+
+## Apply erratic disruption, then difficulty-based mistake injection.
+## Returns the final selected move from the ranked move list.
+func _apply_personality_and_difficulty(scored_moves: Array[Dictionary]) -> Dictionary:
+	if scored_moves.is_empty():
+		return {}
+
+	if scored_moves.size() == 1:
+		return scored_moves[0].move
+
+	var candidates := scored_moves
+
+	# Erratic disruption: swap top move with random from top 50%
+	if personality == Personality.ERRATIC and randf() < erratic_disruption_chance:
+		var pool_size := maxi(1, ceili(candidates.size() * 0.5))
+		var swap_idx := randi_range(0, pool_size - 1)
+		if swap_idx != 0:
+			var temp: Dictionary = candidates[0]
+			candidates[0] = candidates[swap_idx]
+			candidates[swap_idx] = temp
+
+	# Difficulty mistake injection
+	if _mistake_chance > 0.0 and randf() < _mistake_chance:
+		var pool_size := maxi(1, ceili(candidates.size() * _mistake_pool_fraction))
+		# Filter out terminal-loss moves from the mistake pool
+		var safe_pool: Array[Dictionary] = []
+		for i in mini(pool_size, candidates.size()):
+			if candidates[i].score > -TERMINAL_SCORE + 100:
+				safe_pool.append(candidates[i])
+		if not safe_pool.is_empty():
+			var pick := safe_pool[randi_range(0, safe_pool.size() - 1)]
+			return pick.move
+
+	# No mistake — return the top-ranked move
+	return candidates[0].move
 
 
 # --- Internal: Minimax ---

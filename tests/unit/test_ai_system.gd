@@ -35,8 +35,11 @@ func after_test() -> void:
 
 func _setup_match_and_ai(ai_side: int, depth: int = 2) -> void:
 	_board.start_match(_board.MatchMode.STANDARD, _board.Side.DEFENDER)
-	_ai.search_depth = depth
 	_ai.configure(_board, ai_side)
+	_ai.search_depth = depth
+	# Disable mistake injection for deterministic core evaluator tests
+	_ai._mistake_chance = 0.0
+	_ai.erratic_disruption_chance = 0.0
 
 
 func _clear_board() -> void:
