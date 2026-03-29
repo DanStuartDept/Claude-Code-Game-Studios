@@ -552,3 +552,148 @@ func test_19_data_externalized() -> void:
 	# Verify these are writable (can be overridden by Resource in S1-02)
 	_board.king_threatened_threshold = 3
 	assert_int(_board.king_threatened_threshold).is_equal(3)
+
+
+# ---------------------------------------------------------------------------
+# Additional coverage: Public API methods not covered by acceptance criteria
+# ---------------------------------------------------------------------------
+
+func test_get_tile_type_returns_correct_types() -> void:
+	assert_int(_board.get_tile_type(Vector2i(3, 3))).is_equal(_board.TileType.THRONE)
+	assert_int(_board.get_tile_type(Vector2i(0, 0))).is_equal(_board.TileType.CORNER)
+	assert_int(_board.get_tile_type(Vector2i(0, 6))).is_equal(_board.TileType.CORNER)
+	assert_int(_board.get_tile_type(Vector2i(6, 0))).is_equal(_board.TileType.CORNER)
+	assert_int(_board.get_tile_type(Vector2i(6, 6))).is_equal(_board.TileType.CORNER)
+	assert_int(_board.get_tile_type(Vector2i(2, 2))).is_equal(_board.TileType.NORMAL)
+
+
+func test_is_in_bounds_returns_correct_values() -> void:
+	assert_bool(_board.is_in_bounds(Vector2i(0, 0))).is_true()
+	assert_bool(_board.is_in_bounds(Vector2i(6, 6))).is_true()
+	assert_bool(_board.is_in_bounds(Vector2i(3, 3))).is_true()
+	assert_bool(_board.is_in_bounds(Vector2i(-1, 0))).is_false()
+	assert_bool(_board.is_in_bounds(Vector2i(0, -1))).is_false()
+	assert_bool(_board.is_in_bounds(Vector2i(7, 0))).is_false()
+	assert_bool(_board.is_in_bounds(Vector2i(0, 7))).is_false()
+
+
+func test_get_all_legal_moves_returns_moves_for_side() -> void:
+	_clear_board()
+	_place_piece(Vector2i(0, 1), _board.PieceType.ATTACKER)
+	_place_piece(Vector2i(6, 6), _board.PieceType.KING)
+
+	var attacker_moves: Array = _board.get_all_legal_moves(_board.Side.ATTACKER)
+	# Single attacker at (0,1) — has multiple destinations
+	assert_bool(attacker_moves.size() > 0).is_true()
+	# All moves should originate from (0,1)
+	for m in attacker_moves:
+		assert_object(m.from).is_equal(Vector2i(0, 1))
+
+	var defender_moves: Array = _board.get_all_legal_moves(_board.Side.DEFENDER)
+	# King at (6,6) is a corner — king can enter corners, so it has moves out
+	assert_bool(defender_moves.size() > 0).is_true()
+	for m in defender_moves:
+		assert_object(m.from).is_equal(Vector2i(6, 6))
+
+
+func test_get_board_state_returns_complete_snapshot() -> void:
+	var state: Dictionary = _board.get_board_state()
+
+	assert_bool(state.has("grid")).is_true()
+	assert_bool(state.has("active_side")).is_true()
+	assert_bool(state.has("winner")).is_true()
+	assert_bool(state.has("win_reason")).is_true()
+	assert_bool(state.has("match_active")).is_true()
+	assert_bool(state.has("match_mode")).is_true()
+	assert_bool(state.has("player_side")).is_true()
+	assert_bool(state.has("king_pos")).is_true()
+	assert_bool(state.has("move_count")).is_true()
+
+	# Grid should be 7x7
+	assert_int(state.grid.size()).is_equal(7)
+	assert_int(state.grid[0].size()).is_equal(7)
+
+	# State reflects current match
+	assert_bool(state.match_active).is_true()
+	assert_int(state.active_side).is_equal(_board.Side.ATTACKER)
+	assert_int(state.player_side).is_equal(_board.Side.DEFENDER)
+	assert_int(state.match_mode).is_equal(_board.MatchMode.STANDARD)
+	assert_int(state.move_count).is_equal(0)
+
+
+func test_get_king_threat_count_returns_adjacent_attackers() -> void:
+	_clear_board()
+	_place_piece(Vector2i(3, 3), _board.PieceType.KING)
+	assert_int(_board.get_king_threat_count()).is_equal(0)
+
+	_place_piece(Vector2i(2, 3), _board.PieceType.ATTACKER)
+	assert_int(_board.get_king_threat_count()).is_equal(1)
+
+	_place_piece(Vector2i(4, 3), _board.PieceType.ATTACKER)
+	assert_int(_board.get_king_threat_count()).is_equal(2)
+
+	# Diagonal attacker should NOT count
+	_place_piece(Vector2i(2, 2), _board.PieceType.ATTACKER)
+	assert_int(_board.get_king_threat_count()).is_equal(2)
+
+
+func test_get_match_mode_returns_current_mode() -> void:
+	assert_int(_board.get_match_mode()).is_equal(_board.MatchMode.STANDARD)
+
+	_board.start_match(_board.MatchMode.SCRIPTED, _board.Side.DEFENDER)
+	assert_int(_board.get_match_mode()).is_equal(_board.MatchMode.SCRIPTED)
+
+
+func test_get_move_count_increments_on_valid_moves() -> void:
+	assert_int(_board.get_move_count()).is_equal(0)
+
+	_clear_board()
+	_place_piece(Vector2i(0, 1), _board.PieceType.ATTACKER)
+	_place_piece(Vector2i(6, 6), _board.PieceType.KING)
+	_set_active_side(_board.Side.ATTACKER)
+
+	_board.submit_move(Vector2i(0, 1), Vector2i(0, 2))
+	assert_int(_board.get_move_count()).is_equal(1)
+
+	_set_active_side(_board.Side.DEFENDER)
+	_board.submit_move(Vector2i(6, 6), Vector2i(6, 5))
+	assert_int(_board.get_move_count()).is_equal(2)
+
+
+func test_get_piece_out_of_bounds_returns_none() -> void:
+	assert_int(_board.get_piece(Vector2i(-1, 0))).is_equal(_board.PieceType.NONE)
+	assert_int(_board.get_piece(Vector2i(7, 3))).is_equal(_board.PieceType.NONE)
+	assert_int(_board.get_piece(Vector2i(3, -1))).is_equal(_board.PieceType.NONE)
+
+
+func test_submit_move_rejects_no_piece_at_source() -> void:
+	_clear_board()
+	_place_piece(Vector2i(6, 6), _board.PieceType.KING)
+	_set_active_side(_board.Side.ATTACKER)
+
+	var result: Dictionary = _board.submit_move(Vector2i(0, 0), Vector2i(0, 1))
+	assert_bool(result.valid).is_false()
+	assert_str(result.error).is_equal("No piece at source")
+
+
+func test_submit_move_rejects_wrong_side_piece() -> void:
+	_clear_board()
+	_place_piece(Vector2i(3, 0), _board.PieceType.DEFENDER)
+	_place_piece(Vector2i(6, 6), _board.PieceType.KING)
+	_set_active_side(_board.Side.ATTACKER)
+
+	var result: Dictionary = _board.submit_move(Vector2i(3, 0), Vector2i(3, 1))
+	assert_bool(result.valid).is_false()
+	assert_str(result.error).is_equal("Piece belongs to other side")
+
+
+func test_submit_move_rejects_illegal_destination() -> void:
+	_clear_board()
+	_place_piece(Vector2i(0, 1), _board.PieceType.ATTACKER)
+	_place_piece(Vector2i(6, 6), _board.PieceType.KING)
+	_set_active_side(_board.Side.ATTACKER)
+
+	# Diagonal move is illegal
+	var result: Dictionary = _board.submit_move(Vector2i(0, 1), Vector2i(1, 2))
+	assert_bool(result.valid).is_false()
+	assert_str(result.error).is_equal("Illegal move")
