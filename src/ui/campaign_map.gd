@@ -801,8 +801,6 @@ func _on_post_dialogue_complete() -> void:
 			if child is DialogueOverlay:
 				child.completed.connect(func() -> void:
 					_refresh_cards()
-					if _autoplay:
-						_autoplay_challenge()
 				)
 				return
 
