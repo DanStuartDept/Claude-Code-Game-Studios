@@ -12,10 +12,13 @@ config_version=5
 
 config/name="Fidchell"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+run/main_scene="res://scenes/menu/MainMenu.tscn"
 
 [autoload]
 
+SceneManager="*res://src/core/scene_manager.gd"
 BoardRules="*res://src/core/board_rules.gd"
+AISystem="*res://src/core/ai_system.gd"
 
 [editor_plugins]
 
