@@ -48,12 +48,12 @@ focused sessions.
 
 ### Should Have
 
-| ID | Task | System | Est. Sessions | Dependencies | Acceptance Criteria |
-|----|------|--------|---------------|--------------|---------------------|
-| S1-10 | **Minimal main menu** — Title screen with a "Play" button that launches a match via SceneManager | Scene Management | 0.5 | S1-03 | App opens to menu; tapping Play starts a match |
-| S1-11 | **Turn indicator & last move** — HUD showing whose turn it is, last move highlight on board | Board UI | 0.5 | S1-08 | Active side displayed; previous move visually indicated |
-| S1-12 | **AI think indicator** — Show "thinking..." during AI turn with configurable delay | Board UI / AI | 0.5 | S1-08, S1-04 | Visible feedback during AI turn; think time feels natural |
-| S1-13 | **King threat visual** — Pulse/glow on King when 2+ attackers are adjacent | Board UI | 0.5 | S1-08 | King visually reacts to `king_threatened` signal |
+| ID | Task | System | Est. Sessions | Dependencies | Status |
+|----|------|--------|---------------|--------------|--------|
+| S1-10 | **Minimal main menu** — Title screen with a "Play" button that launches a match via SceneManager | Scene Management | 0.5 | S1-03 | DONE (S1-09 commit) |
+| S1-11 | **Turn indicator & last move** — HUD showing whose turn it is, last move highlight on board | Board UI | 0.5 | S1-08 | DONE (S1-08/S1-09 commits) |
+| S1-12 | **AI think indicator** — Show "thinking..." during AI turn with configurable delay | Board UI / AI | 0.5 | S1-08, S1-04 | DONE (S1-09 commit) |
+| S1-13 | **King threat visual** — Pulse/glow on King when 2+ attackers are adjacent | Board UI | 0.5 | S1-08 | DONE (S1-08 commit) |
 
 ### Nice to Have
 

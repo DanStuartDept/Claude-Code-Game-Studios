@@ -414,9 +414,9 @@ func _debug_on_piece_moved(piece_type: int, from_pos: Vector2i, to_pos: Vector2i
 	print("[MOVE] %s moved: %s -> %s" % [type_name, from_pos, to_pos])
 
 
-func _debug_on_piece_captured(piece_type: int, position: Vector2i, captured_by: Vector2i) -> void:
+func _debug_on_piece_captured(piece_type: int, cell: Vector2i, captured_by: Vector2i) -> void:
 	var type_name: String = ["NONE", "ATTACKER", "DEFENDER", "KING"][piece_type]
-	print("[CAPTURE] %s captured at %s (by move to %s)" % [type_name, position, captured_by])
+	print("[CAPTURE] %s captured at %s (by move to %s)" % [type_name, cell, captured_by])
 
 
 func _debug_on_king_threatened(king_pos: Vector2i, threat_count: int) -> void:
