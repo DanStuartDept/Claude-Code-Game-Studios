@@ -297,13 +297,13 @@ func _setup_tutorial_board() -> void:
 	var king_arr: Array = _board_layout.get("king", [3, 3])
 	_board_rules.king_start_pos = Vector2i(int(king_arr[0]), int(king_arr[1]))
 
-	var defenders: Array = []
+	var defenders: Array[Vector2i] = []
 	for d: Array in _board_layout.get("defenders", []):
 		if d.size() >= 2:
 			defenders.append(Vector2i(int(d[0]), int(d[1])))
 	_board_rules.defender_start_positions = defenders
 
-	var attackers: Array = []
+	var attackers: Array[Vector2i] = []
 	for a: Array in _board_layout.get("attackers", []):
 		if a.size() >= 2:
 			attackers.append(Vector2i(int(a[0]), int(a[1])))

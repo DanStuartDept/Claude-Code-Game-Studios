@@ -153,7 +153,6 @@ func _write_jsonl(record: Dictionary) -> void:
 
 ## Write full campaign summary to JSON file and print to console.
 func _write_campaign_summary() -> void:
-	var campaign: Node = get_node_or_null("/root/CampaignSystem")
 	var rep: Node = get_node_or_null("/root/ReputationSystem")
 
 	var total_matches: int = _match_records.size()
@@ -227,7 +226,7 @@ func _write_campaign_summary() -> void:
 		"losses": losses,
 		"win_rate": float(wins) / total_matches if total_matches > 0 else 0.0,
 		"total_moves": total_moves,
-		"avg_moves_per_match": total_moves / total_matches if total_matches > 0 else 0,
+		"avg_moves_per_match": int(total_moves / total_matches) if total_matches > 0 else 0,
 		"fastest_win_moves": fastest_win_moves,
 		"slowest_win_moves": slowest_win_moves,
 		"final_reputation": rep.get_reputation() if rep != null else 0,

@@ -686,7 +686,6 @@ func _on_advance_pressed() -> void:
 		return
 
 	if _campaign.is_chapter_complete() and _campaign.can_advance_chapter():
-		var old_ch: int = _campaign.current_chapter
 		_campaign.advance_chapter()
 		_refresh_cards()
 		var start_id: String = "narrator_ch%d_start" % _campaign.current_chapter
