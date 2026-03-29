@@ -34,6 +34,7 @@ var _dialogue: Node = null
 var _reputation: Node = null
 var _scene_manager: Node = null
 var _match_result: Dictionary = {}
+var _autoplay: bool = false
 
 
 # ---------------------------------------------------------------------------
@@ -45,6 +46,7 @@ func _ready() -> void:
 	_dialogue = get_node_or_null("/root/DialogueSystem")
 	_reputation = get_node_or_null("/root/ReputationSystem")
 	_scene_manager = get_node_or_null("/root/SceneManager")
+	_autoplay = OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay")
 
 	# Register scenes
 	if _scene_manager != null:
@@ -64,13 +66,14 @@ func _ready() -> void:
 	if _scene_manager != null and _scene_manager.scene_data.has("match_result"):
 		_match_result = _scene_manager.scene_data["match_result"]
 		_scene_manager.scene_data = {}
-		# Process the result through campaign + show post-dialogue
 		_handle_match_return()
 	elif _scene_manager != null and _scene_manager.scene_data.has("show_narrator"):
 		var narrator_id: String = _scene_manager.scene_data.get("narrator_id", "")
 		_scene_manager.scene_data = {}
 		if narrator_id != "":
 			_show_narrator(narrator_id)
+	elif _autoplay:
+		_autoplay_challenge()
 
 
 func _build_ui() -> void:
@@ -386,6 +389,11 @@ func _show_reputation_breakdown() -> void:
 	_rep_breakdown_label.text = text
 	_rep_panel.visible = true
 
+	# Auto-play: dismiss rep panel after delay
+	if _autoplay:
+		await get_tree().create_timer(2.0).timeout
+		_on_rep_continue()
+
 
 func _on_rep_continue() -> void:
 	_rep_panel.visible = false
@@ -401,6 +409,10 @@ func _on_post_dialogue_complete() -> void:
 			return
 
 	_update_display()
+
+	# Auto-play: continue to next challenge
+	if _autoplay:
+		_autoplay_challenge()
 
 
 ## Show a narrator line, then advance chapter and update display.
@@ -423,12 +435,16 @@ func _show_narrator_then_advance(line_id: String) -> void:
 			add_child(overlay)
 			overlay.completed.connect(func() -> void:
 				_campaign.advance_chapter()
-				_update_display())
+				_update_display()
+				if _autoplay:
+					_autoplay_challenge())
 			return
 
 	# Line not found — just advance
 	_campaign.advance_chapter()
 	_update_display()
+	if _autoplay:
+		_autoplay_challenge()
 
 
 func _show_narrator(line_id: String) -> void:
@@ -448,10 +464,31 @@ func _show_narrator(line_id: String) -> void:
 
 			var overlay: Control = _create_dialogue_overlay()
 			add_child(overlay)
+			if _autoplay:
+				overlay.completed.connect(_autoplay_challenge)
 			return
 
 
 func _create_dialogue_overlay() -> Control:
 	var DialogueOverlayScript: GDScript = preload("res://src/ui/dialogue_overlay.gd")
 	var overlay: Control = DialogueOverlayScript.new()
+	if _autoplay:
+		overlay.set_meta("autoplay", true)
 	return overlay
+
+
+## Debug: auto-press challenge after a brief delay.
+func _autoplay_challenge() -> void:
+	if _campaign == null:
+		return
+	# Stop if campaign is complete or no more matches
+	if _campaign.state == _campaign.CampaignState.CAMPAIGN_COMPLETE:
+		print("[AUTOPLAY] Campaign complete — stopping")
+		return
+	print("[AUTOPLAY] Auto-challenge in 2s...")
+	await get_tree().create_timer(2.0).timeout
+	if _challenge_button.visible:
+		print("[AUTOPLAY] Pressing Challenge")
+		_on_challenge_pressed()
+	else:
+		print("[AUTOPLAY] No challenge available — campaign may be gated")

@@ -418,14 +418,21 @@ func _show_result(result: Dictionary) -> void:
 	if _campaign_mode:
 		_play_again_button.text = "Continue"
 
-	# Auto-play: start next match after a brief pause
+	# Auto-play: continue after a brief pause
 	if debug_autoplay:
-		if _autoplay_max_matches > 0 and _autoplay_match_count >= _autoplay_max_matches:
-			print("[MATCH] === Auto-play complete: %d matches played ===" % _autoplay_match_count)
-			return
-		print("[MATCH] Starting next match in 2s...")
-		await get_tree().create_timer(2.0).timeout
-		_on_play_again_pressed()
+		if _campaign_mode:
+			# Campaign: auto-return to campaign map
+			print("[MATCH] Auto-returning to campaign map in 2s...")
+			await get_tree().create_timer(2.0).timeout
+			_on_play_again_pressed()
+		else:
+			# Quick play: restart match (with limit)
+			if _autoplay_max_matches > 0 and _autoplay_match_count >= _autoplay_max_matches:
+				print("[MATCH] === Auto-play complete: %d matches played ===" % _autoplay_match_count)
+				return
+			print("[MATCH] Starting next match in 2s...")
+			await get_tree().create_timer(2.0).timeout
+			_on_play_again_pressed()
 
 
 func _return_to_campaign() -> void:
@@ -441,7 +448,7 @@ func _on_play_again_pressed() -> void:
 	_result_panel.visible = false
 
 	# Campaign mode: return to campaign map with the result
-	if _campaign_mode and not debug_autoplay:
+	if _campaign_mode:
 		_return_to_campaign()
 		return
 

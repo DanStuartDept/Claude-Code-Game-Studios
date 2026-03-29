@@ -53,6 +53,10 @@ func _ready() -> void:
 	if _dialogue_system != null and _dialogue_system.is_active():
 		_show_current_line()
 
+	# Auto-play: advance dialogue automatically
+	if has_meta("autoplay") and get_meta("autoplay"):
+		_autoplay_loop()
+
 
 func _build_ui() -> void:
 	set_anchors_preset(PRESET_FULL_RECT)
@@ -200,3 +204,12 @@ func _apply_character_style(speaker: String, opponent_id: String) -> void:
 func _dismiss() -> void:
 	completed.emit()
 	queue_free()
+
+
+## Debug: auto-advance dialogue lines with a delay.
+func _autoplay_loop() -> void:
+	while is_inside_tree():
+		await get_tree().create_timer(2.5).timeout
+		if not is_inside_tree():
+			return
+		_handle_tap()

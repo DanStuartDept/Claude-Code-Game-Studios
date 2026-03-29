@@ -70,10 +70,10 @@ func _ready() -> void:
 		scene_manager.register_scene(&"menu", "res://scenes/menu/MainMenu.tscn")
 		scene_manager.register_scene(&"campaign_map", "res://scenes/campaign/CampaignMap.tscn")
 
-	# Auto-play: skip menu and go straight to match
+	# Auto-play: skip menu and go straight to campaign
 	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
-		print("[MENU] Auto-play detected, launching match...")
-		_launch_quick_play("res://assets/data/opponents/seanan.tres")
+		print("[MENU] Auto-play detected, launching campaign...")
+		_on_campaign_pressed()
 
 
 ## Scan opponent directory and create a button for each profile.

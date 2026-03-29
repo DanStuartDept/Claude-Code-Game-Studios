@@ -164,11 +164,11 @@ func _find_matching_lines(context: Dictionary) -> Array:
 			var context_value: Variant = context.get(tag)
 
 			# Null/missing tag in line = wildcard (matches anything)
-			if line_value == null or line_value == "":
+			if line_value == null or (line_value is String and line_value == ""):
 				continue
 
 			# Line has a specific value — context must match
-			if context_value == null or context_value == "":
+			if context_value == null or (context_value is String and context_value == ""):
 				matches = false
 				break
 
