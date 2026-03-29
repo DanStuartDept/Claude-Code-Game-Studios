@@ -3,6 +3,7 @@
 ## Shows character name, text, and a "tap to continue" prompt.
 ## Pushed as a SceneManager overlay during pre/post-match dialogue.
 ## Tap advances to next line; after last line, overlay pops itself.
+## Narrator lines use distinct styling: centered, italic, muted tones.
 ##
 ## Architecture: Presentation Layer (ADR-0001).
 ## See: design/gdd/dialogue-system.md
@@ -23,6 +24,12 @@ var _panel: PanelContainer = null
 var _name_label: Label = null
 var _text_label: Label = null
 var _continue_label: Label = null
+
+## Narrator-specific styling colors.
+const NARRATOR_TEXT_COLOR: Color = Color(0.75, 0.72, 0.65)
+const NARRATOR_BG_COLOR: Color = Color(0.0, 0.0, 0.0, 0.65)
+const CHARACTER_TEXT_COLOR: Color = Color(0.85, 0.82, 0.75)
+const CHARACTER_BG_COLOR: Color = Color(0.0, 0.0, 0.0, 0.5)
 
 
 # --- State ---
@@ -136,27 +143,15 @@ func _show_current_line() -> void:
 	if line.is_empty():
 		return
 
-	# Character name — use opponent_id formatted, or "Narrator"
 	var opponent_id: String = line.get("opponent_id", "")
 	var speaker: String = line.get("speaker", "")
+	var is_narrator: bool = (opponent_id == "narrator" or (opponent_id == "" and speaker == ""))
 
-	if speaker != "":
-		_name_label.text = speaker
-	elif opponent_id == "narrator" or opponent_id == "":
-		_name_label.text = ""
-		_name_label.visible = false
+	# Apply narrator vs. character styling
+	if is_narrator:
+		_apply_narrator_style()
 	else:
-		# Look up character name from CampaignSystem
-		var campaign: Node = get_node_or_null("/root/CampaignSystem")
-		if campaign != null:
-			var profile: Resource = campaign.get_current_opponent()
-			if profile != null and profile.character_name != "":
-				_name_label.text = profile.character_name
-			else:
-				_name_label.text = opponent_id.capitalize()
-		else:
-			_name_label.text = opponent_id.capitalize()
-		_name_label.visible = true
+		_apply_character_style(speaker, opponent_id)
 
 	# Dialogue text
 	_text_label.text = line.get("text", "")
@@ -167,6 +162,39 @@ func _show_current_line() -> void:
 		_continue_label.text = "Tap to continue"
 	else:
 		_continue_label.text = "Tap to dismiss"
+
+
+## Apply narrator visual style: no name, centered italic text, darker bg.
+func _apply_narrator_style() -> void:
+	_name_label.text = ""
+	_name_label.visible = false
+	_text_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_text_label.add_theme_color_override("font_color", NARRATOR_TEXT_COLOR)
+	_text_label.add_theme_font_size_override("font_size", 15)
+	_bg.color = NARRATOR_BG_COLOR
+	_continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+
+## Apply character dialogue style: name label, left-aligned text.
+func _apply_character_style(speaker: String, opponent_id: String) -> void:
+	if speaker != "":
+		_name_label.text = speaker
+	else:
+		var campaign: Node = get_node_or_null("/root/CampaignSystem")
+		if campaign != null:
+			var profile: Resource = campaign.get_current_opponent()
+			if profile != null and profile.character_name != "":
+				_name_label.text = profile.character_name
+			else:
+				_name_label.text = opponent_id.capitalize()
+		else:
+			_name_label.text = opponent_id.capitalize()
+	_name_label.visible = true
+	_text_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_text_label.add_theme_color_override("font_color", CHARACTER_TEXT_COLOR)
+	_text_label.add_theme_font_size_override("font_size", 16)
+	_bg.color = CHARACTER_BG_COLOR
+	_continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 
 func _dismiss() -> void:
