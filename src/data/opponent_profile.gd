@@ -26,6 +26,10 @@ extends Resource
 ## Personality weight profile resource.
 @export var personality: AIPersonalityData = null
 
+## Feud tendency (0.0-1.0). Probability of triggering a feud on loss.
+## 0.0 = exempt from feuds (fixed rematches only).
+@export var feud_tendency: float = 0.0
+
 ## Optional description for debug/editor display.
 @export var description: String = ""
 

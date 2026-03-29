@@ -319,6 +319,11 @@ func process_match_result(result: Dictionary) -> void:
 		if is_boss:
 			defeated_bosses[opponent_id] = true
 
+		# Process feud win if applicable
+		var feud: Node = get_node_or_null("/root/FeudSystem")
+		if feud != null and feud.is_feud_win(opponent_id):
+			feud.process_feud_win(opponent_id)
+
 		# Award reputation (via ReputationSystem)
 		_award_reputation(result, entry, opponent_id)
 
@@ -331,6 +336,12 @@ func process_match_result(result: Dictionary) -> void:
 	else:
 		# Loss — stay at same position
 		current_loss_streak += 1
+
+		# Process feud trigger on loss
+		var feud: Node = get_node_or_null("/root/FeudSystem")
+		if feud != null and opponent != null:
+			var tendency: float = opponent.feud_tendency if "feud_tendency" in opponent else 0.0
+			feud.process_match_loss(opponent_id, tendency, current_chapter)
 
 	state = CampaignState.POST_DIALOGUE
 	match_result_processed.emit(result)
@@ -407,7 +418,7 @@ func build_dialogue_context(timing: String) -> Dictionary:
 		"timing": timing,
 		"encounter": get_encounter_type(opponent_id),
 		"result_history": get_result_history(opponent_id),
-		"feud_state": "neutral",  # Feud System not yet implemented
+		"feud_state": _get_feud_state(opponent_id),
 		"reputation_tier": rep_tier,
 		"is_chapter_boss": entry.get("is_chapter_boss", false),
 		"is_final_boss": entry.get("is_final_boss", false),
@@ -503,14 +514,25 @@ func _award_reputation(result: Dictionary, entry: Dictionary, opponent_id: Strin
 	if rep_system == null or not rep_system.has_method("award_match_win"):
 		return
 
+	var feud: Node = get_node_or_null("/root/FeudSystem")
+	var feud_win: bool = feud.is_feud_win(opponent_id) if feud != null else false
+	var nemesis_win: bool = feud.is_nemesis_win(opponent_id) if feud != null else false
+
 	var context: Dictionary = {
 		"move_count": result.get("move_count", 0),
 		"defender_pieces": result.get("pieces_remaining", {}).get("defender", 0),
 		"is_chapter_boss": entry.get("is_chapter_boss", false),
-		"is_feud_win": false,  # Feud System not yet implemented
-		"is_nemesis_win": false,
+		"is_feud_win": feud_win,
+		"is_nemesis_win": nemesis_win,
 		"is_rematch_win": has_lost_to(opponent_id),
 		"opponent_id": opponent_id,
 	}
 
 	rep_system.award_match_win(context)
+
+
+func _get_feud_state(opponent_id: String) -> String:
+	var feud: Node = get_node_or_null("/root/FeudSystem")
+	if feud != null:
+		return feud.get_feud_state(opponent_id)
+	return "neutral"

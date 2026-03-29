@@ -166,6 +166,9 @@ func _start_new_campaign() -> void:
 		var rep: Node = get_node_or_null("/root/ReputationSystem")
 		if rep != null:
 			rep.reset()
+		var feud: Node = get_node_or_null("/root/FeudSystem")
+		if feud != null:
+			feud.reset()
 
 		scene_manager.scene_data = { "show_narrator": true, "narrator_id": "narrator_ch0_start" }
 		visible = false
