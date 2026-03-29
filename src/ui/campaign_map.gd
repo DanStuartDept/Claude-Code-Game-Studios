@@ -797,11 +797,52 @@ func _on_post_dialogue_complete() -> void:
 		if _campaign.can_advance_chapter():
 			_show_narrator_then_advance(end_id)
 			return
+		elif not _campaign.can_advance_chapter() and not _campaign.campaign_completed_flag:
+			# Final chapter complete, no more chapters — campaign victory
+			_campaign.state = _campaign.CampaignState.CAMPAIGN_COMPLETE
+			_campaign.campaign_completed_flag = true
+			_campaign.campaign_completed.emit()
+			_show_campaign_victory()
+			return
+
+	# Check if campaign is already complete (e.g., reloading after final win)
+	if _campaign.campaign_completed_flag:
+		_show_campaign_completion_state()
 
 	_refresh_cards()
 
 	if _autoplay:
 		_autoplay_challenge()
+
+
+func _show_campaign_victory() -> void:
+	# Show the victory narrator text, then display completion state
+	_show_narrator("narrator_ch4_victory")
+	if _dialogue != null and _dialogue.is_active():
+		# Find the overlay we just created and connect to its completion
+		for child: Node in get_children():
+			if child is DialogueOverlay:
+				child.completed.connect(func() -> void:
+					_show_campaign_completion_state()
+					_refresh_cards()
+					if _autoplay:
+						_return_to_menu()
+				)
+				return
+	# Fallback if no dialogue overlay was created
+	_show_campaign_completion_state()
+	_refresh_cards()
+
+
+func _show_campaign_completion_state() -> void:
+	# Show a victory banner on the campaign map
+	if _header_chapter_label != null:
+		_header_chapter_label.text = "Campaign Complete"
+	if _header_location_label != null:
+		_header_location_label.text = "The King of Fidchell"
+	if _status_label != null:
+		_status_label.text = "You have defeated Murchadh and reclaimed your place at Tara."
+		_status_label.visible = true
 
 
 func _show_narrator_then_advance(line_id: String) -> void:
