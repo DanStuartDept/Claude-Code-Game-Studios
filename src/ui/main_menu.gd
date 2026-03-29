@@ -43,7 +43,16 @@ func _ready() -> void:
 	spacer.custom_minimum_size = Vector2(0, 30)
 	vbox.add_child(spacer)
 
-	# Campaign button
+	# Continue Campaign button (only when save exists)
+	var save: Node = get_node_or_null("/root/SaveSystem")
+	if save != null and save.has_save():
+		var continue_button := Button.new()
+		continue_button.text = "Continue Campaign"
+		continue_button.pressed.connect(_on_continue_pressed)
+		continue_button.custom_minimum_size = Vector2(200, 50)
+		vbox.add_child(continue_button)
+
+	# New Campaign button
 	var campaign_button := Button.new()
 	campaign_button.text = "New Campaign"
 	campaign_button.pressed.connect(_on_campaign_pressed)
@@ -108,6 +117,17 @@ func _populate_opponent_buttons(parent: VBoxContainer) -> void:
 		button.pressed.connect(_launch_quick_play.bind(p.path))
 		button.custom_minimum_size = Vector2(200, 36)
 		parent.add_child(button)
+
+
+func _on_continue_pressed() -> void:
+	var save_sys: Node = get_node_or_null("/root/SaveSystem")
+	if save_sys != null and save_sys.load_game():
+		var scene_manager: Node = get_node_or_null("/root/SceneManager")
+		if scene_manager != null:
+			scene_manager.scene_data = {}
+			visible = false
+			scene_manager.change_scene(&"campaign_map")
+			queue_free()
 
 
 func _on_campaign_pressed() -> void:
