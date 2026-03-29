@@ -1,6 +1,6 @@
 # Sprint 5 — Content Expansion & End-to-End Playability
 
-> **Status**: Draft
+> **Status**: Complete
 > **Goal**: Fill chapters 2-4 with opponents/dialogue, implement audio system, add settings — make the full campaign playable start to finish
 > **Milestone**: Beta (feature-complete, content-complete)
 > **Created**: 2026-03-29
