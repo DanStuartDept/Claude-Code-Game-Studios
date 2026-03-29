@@ -256,13 +256,14 @@ func test_piece_moved_updates_last_move() -> void:
 	assert_object(_ui._last_move.to).is_equal(Vector2i(0, 2))
 
 
-func test_piece_captured_removes_piece() -> void:
+func test_piece_captured_queues_capture() -> void:
 	_setup_board_ui()
-	# Place a defender at (2, 2) then capture it
+	# Place a defender at (2, 2) then signal capture
 	_ui._pieces[Vector2i(2, 2)] = _board.PieceType.DEFENDER
 	_board.piece_captured.emit(_board.PieceType.DEFENDER, Vector2i(2, 2), Vector2i(2, 1))
 
-	assert_int(_ui.get_piece_at(Vector2i(2, 2))).is_equal(0)
+	# Capture is queued for animation (removed during animation sequence)
+	assert_int(_ui._capture_queue.size()).is_equal(1)
 
 
 func test_king_threatened_updates_state() -> void:
