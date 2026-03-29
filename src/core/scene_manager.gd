@@ -43,6 +43,10 @@ var fade_duration_overlay: float = 0.2
 ## Whether input is blocked during transitions.
 var input_block_during_transition: bool = true
 
+## Arbitrary data to pass to the next scene. Set before calling change_scene().
+## The loaded scene can read this in _ready(). Cleared after each scene change.
+var scene_data: Dictionary = {}
+
 
 # --- Internal State ---
 

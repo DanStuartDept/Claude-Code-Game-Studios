@@ -1,7 +1,7 @@
-## Main Menu — Simple title screen with Play button.
+## Main Menu — Simple title screen with opponent selection.
 ##
-## Launches a match against Seanán via SceneManager.
-## See: production/sprints/sprint-01.md (S1-10)
+## Launches a match against a selected opponent via SceneManager.
+## See: production/sprints/sprint-01.md (S1-10, S1-16)
 class_name MainMenu
 extends Control
 
@@ -18,8 +18,8 @@ func _ready() -> void:
 	vbox.set_anchors_preset(PRESET_CENTER)
 	vbox.offset_left = -120.0
 	vbox.offset_right = 120.0
-	vbox.offset_top = -80.0
-	vbox.offset_bottom = 80.0
+	vbox.offset_top = -120.0
+	vbox.offset_bottom = 120.0
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	add_child(vbox)
 
@@ -40,11 +40,9 @@ func _ready() -> void:
 	spacer.custom_minimum_size = Vector2(0, 30)
 	vbox.add_child(spacer)
 
-	var play_button := Button.new()
-	play_button.text = "Play vs Seanán"
-	play_button.pressed.connect(_on_play_pressed)
-	play_button.custom_minimum_size = Vector2(200, 50)
-	vbox.add_child(play_button)
+	# Opponent buttons
+	_add_opponent_button(vbox, "Play vs Seanan", "res://assets/data/opponents/seanan.tres")
+	_add_opponent_button(vbox, "Play vs Brigid", "res://assets/data/opponents/brigid.tres")
 
 	# Register scenes
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
@@ -55,18 +53,23 @@ func _ready() -> void:
 	# Auto-play: skip menu and go straight to match
 	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
 		print("[MENU] Auto-play detected, launching match...")
-		_on_play_pressed()
+		_launch_match("res://assets/data/opponents/seanan.tres")
 
 
-func _on_play_pressed() -> void:
+func _add_opponent_button(parent: VBoxContainer, text: String, profile_path: String) -> void:
+	var button := Button.new()
+	button.text = text
+	button.pressed.connect(_launch_match.bind(profile_path))
+	button.custom_minimum_size = Vector2(200, 50)
+	parent.add_child(button)
+
+
+func _launch_match(profile_path: String) -> void:
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
 	if scene_manager != null:
-		# Hide immediately — SceneManager loads Match into its own SceneRoot,
-		# but Godot's main scene (this node) stays in the tree as a root child.
-		# We must remove ourselves so we don't sit on top of the Match scene.
+		scene_manager.scene_data = { "opponent_profile_path": profile_path }
 		visible = false
 		scene_manager.change_scene(&"match")
 		queue_free()
 	else:
-		# Fallback: load match scene directly
 		get_tree().change_scene_to_file("res://scenes/match/Match.tscn")

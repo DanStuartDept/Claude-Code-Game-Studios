@@ -66,6 +66,14 @@ func _ready() -> void:
 		debug_autoplay = true
 		print("[MATCH] Auto-play mode enabled")
 
+	# Load opponent profile from scene data (set by MainMenu)
+	var scene_manager: Node = get_node_or_null("/root/SceneManager")
+	if scene_manager != null and scene_manager.scene_data.has("opponent_profile_path"):
+		var path: String = scene_manager.scene_data["opponent_profile_path"]
+		if ResourceLoader.exists(path):
+			opponent_profile = load(path)
+		scene_manager.scene_data = {}
+
 	_build_ui()
 	_start_match()
 

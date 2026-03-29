@@ -57,11 +57,11 @@ focused sessions.
 
 ### Nice to Have
 
-| ID | Task | System | Est. Sessions | Dependencies | Acceptance Criteria |
-|----|------|--------|---------------|--------------|---------------------|
-| S1-14 | **Drag-to-move** — Alternative input: drag piece to destination with snap/cancel | Board UI | 1 | S1-08 | Piece follows finger; snaps to valid cell; cancels on invalid release |
-| S1-15 | **Capture preview** — Highlight which enemy piece(s) will be captured before confirming move | Board UI | 0.5 | S1-08 | Threatened enemies highlighted on legal move hover |
-| S1-16 | **Second opponent** — Configure Brigid (difficulty 2, defensive personality) for variety | AI System | 0.5 | S1-06 | Second opponent plays distinctly from first |
+| ID | Task | System | Est. Sessions | Dependencies | Status |
+|----|------|--------|---------------|--------------|--------|
+| S1-14 | **Drag-to-move** — Alternative input: drag piece to destination with snap/cancel | Board UI | 1 | S1-08 | DONE |
+| S1-15 | **Capture preview** — Highlight which enemy piece(s) will be captured before confirming move | Board UI | 0.5 | S1-08 | DONE |
+| S1-16 | **Second opponent** — Configure Brigid (difficulty 2, defensive personality) for variety | AI System | 0.5 | S1-06 | DONE |
 
 ## Carryover from Previous Sprint
 
