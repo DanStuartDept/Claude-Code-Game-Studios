@@ -1,9 +1,9 @@
 ## Board UI — Visual rendering and interaction for the Fidchell game board.
 ##
 ## Renders the 7×7 grid with tile types, pieces, highlights, and match info.
-## Handles tap-to-select/move input, piece slide animation, capture animation.
-## Reads board state from BoardRules and updates visuals via signals.
-## Responsive scaling for phone (4.7") to tablet (12.9") screens.
+## Handles tap-to-select/move and drag-to-move input, piece slide animation,
+## capture animation. Reads board state from BoardRules and updates visuals
+## via signals. Responsive scaling for phone (4.7") to tablet (12.9") screens.
 ##
 ## Architecture: Core Layer (ADR-0001). Depends on Board Rules Engine.
 ## See: design/gdd/board-ui.md
@@ -121,6 +121,33 @@ var _capturing_piece_type: int = 0
 var _capturing_piece_screen_pos: Vector2 = Vector2.ZERO
 var _capturing_piece_opacity: float = 1.0
 var _capturing_active: bool = false
+
+
+# --- Drag State ---
+
+## Whether a drag gesture is in progress.
+var _dragging: bool = false
+
+## Cell the drag started from.
+var _drag_from_cell: Vector2i = Vector2i(-1, -1)
+
+## Piece type being dragged.
+var _drag_piece_type: int = 0
+
+## Current drag screen position (follows finger/mouse).
+var _drag_screen_pos: Vector2 = Vector2.ZERO
+
+## Time of the initial press (for hold threshold detection).
+var _press_time_ms: int = 0
+
+## Position of the initial press (for drag distance detection).
+var _press_position: Vector2 = Vector2.ZERO
+
+## Whether we've committed to a drag (passed threshold).
+var _drag_committed: bool = false
+
+## Minimum drag distance in pixels before committing to drag.
+const DRAG_DISTANCE_THRESHOLD: float = 8.0
 
 
 # --- Pre-allocated draw arrays (zero-alloc hot path) ---
@@ -303,12 +330,14 @@ func select_piece(cell: Vector2i) -> void:
 	queue_redraw()
 
 
-## Clear the current piece selection.
+## Clear the current piece selection and cancel any active drag.
 func deselect_piece() -> void:
 	_selected_cell = Vector2i(-1, -1)
 	_legal_moves = []
 	_capture_moves = []
 	_king_escape_moves = []
+	_dragging = false
+	_drag_committed = false
 	piece_deselected.emit()
 	queue_redraw()
 
@@ -323,19 +352,89 @@ func _gui_input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			var cell: Vector2i = screen_to_cell(mb.position)
-			_handle_tap(cell)
+		if mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.pressed:
+				_handle_press(mb.position)
+			else:
+				_handle_release(mb.position)
 			accept_event()
+	elif event is InputEventMouseMotion and _dragging:
+		var mm: InputEventMouseMotion = event as InputEventMouseMotion
+		_handle_drag_motion(mm.position)
+		accept_event()
+
+
+## Handle initial press — start potential drag or tap.
+func _handle_press(pos: Vector2) -> void:
+	if _animating:
+		return
+	if _active_side != _player_side:
+		return
+
+	var cell: Vector2i = screen_to_cell(pos)
+	_press_time_ms = Time.get_ticks_msec()
+	_press_position = pos
+	_drag_committed = false
+
+	# Check if pressing on a friendly piece — start potential drag
+	if cell != Vector2i(-1, -1):
+		var piece_type: int = get_piece_at(cell)
+		if piece_type != 0 and _is_player_piece(piece_type):
+			_dragging = true
+			_drag_from_cell = cell
+			_drag_piece_type = piece_type
+			_drag_screen_pos = pos
+			# Select the piece immediately to show legal moves
+			select_piece(cell)
+			return
+
+	# Pressed on empty/enemy cell — not a drag candidate
+	_dragging = false
+
+
+## Handle drag motion — update dragged piece position.
+func _handle_drag_motion(pos: Vector2) -> void:
+	if not _dragging:
+		return
+
+	_drag_screen_pos = pos
+
+	# Check if we've moved far enough to commit to a drag
+	if not _drag_committed:
+		var distance: float = pos.distance_to(_press_position)
+		if distance >= DRAG_DISTANCE_THRESHOLD:
+			_drag_committed = true
+
+	queue_redraw()
+
+
+## Handle release — either submit move (drag) or process as tap.
+func _handle_release(pos: Vector2) -> void:
+	if _animating:
+		_dragging = false
+		return
+	if _active_side != _player_side:
+		_dragging = false
+		return
+
+	var cell: Vector2i = screen_to_cell(pos)
+
+	if _dragging and _drag_committed:
+		# Drag release — submit if valid destination, cancel otherwise
+		_dragging = false
+		if cell != Vector2i(-1, -1) and _is_legal_destination(cell):
+			_submit_player_move(_drag_from_cell, cell)
+		else:
+			# Cancel drag — piece snaps back, keep selection
+			queue_redraw()
+		return
+
+	# Not a committed drag — treat as tap
+	_dragging = false
+	_handle_tap(cell)
 
 
 func _handle_tap(cell: Vector2i) -> void:
-	if _animating:
-		return
-
-	# Only handle player's turn
-	if _active_side != _player_side:
-		return
 	if cell == Vector2i(-1, -1):
 		# Tapped outside board
 		if has_selection():
@@ -527,6 +626,10 @@ func _draw_pieces() -> void:
 		if _moving_piece_active and cell == _moving_piece_dest_cell:
 			continue
 
+		# Skip piece being dragged (drawn separately at finger position)
+		if _dragging and _drag_committed and cell == _drag_from_cell:
+			continue
+
 		var piece_type: int = _pieces[cell]
 		var center: Vector2 = cell_to_screen(cell)
 
@@ -541,6 +644,10 @@ func _draw_animated_pieces() -> void:
 	# Draw capturing piece with fading opacity
 	if _capturing_active:
 		_draw_piece_at(_capturing_piece_type, _capturing_piece_screen_pos, _capturing_piece_opacity)
+
+	# Draw dragged piece at finger/mouse position
+	if _dragging and _drag_committed:
+		_draw_piece_at(_drag_piece_type, _drag_screen_pos, 0.85)
 
 
 func _draw_piece_at(piece_type: int, center: Vector2, opacity: float) -> void:
