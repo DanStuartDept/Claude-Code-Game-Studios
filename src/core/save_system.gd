@@ -154,7 +154,10 @@ func load_game() -> bool:
 	if rep != null and data.has("reputation"):
 		rep.load_save_data(data.reputation)
 
-	# Feud state will be restored here when FeudsSystem exists (S3-16)
+	# Restore feud state
+	var feud: Node = get_node_or_null("/root/FeudSystem")
+	if feud != null and data.has("feud"):
+		feud.load_feud_data(data.feud)
 
 	game_loaded.emit()
 	return true
@@ -196,10 +199,10 @@ func _build_save_data() -> Dictionary:
 	if rep != null:
 		data["reputation"] = rep.get_save_data()
 
-	# Feud state placeholder (S3-16)
-	# var feud: Node = get_node_or_null("/root/FeudsSystem")
-	# if feud != null:
-	#     data["feud"] = feud.get_all_feud_data()
+	# Feud state
+	var feud: Node = get_node_or_null("/root/FeudSystem")
+	if feud != null:
+		data["feud"] = feud.get_all_feud_data()
 
 	return data
 
