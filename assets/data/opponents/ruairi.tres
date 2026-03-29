@@ -5,9 +5,9 @@
 
 [resource]
 script = ExtResource("1")
-character_name = "Ruair\u00ed an Bhaird"
+character_name = "Ruairí an Bhaird"
 character_id = "ruairi"
-difficulty = 4
+difficulty = 3
 personality = ExtResource("2")
 feud_tendency = 0.15
 description = "The poet plays like he composes — brilliant flashes between long pauses, unpredictable and inspired"

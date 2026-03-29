@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1")
-character_name = "Saoirse na C\u00fairte"
+character_name = "Saoirse na Cúirte"
 character_id = "saoirse"
 difficulty = 6
 personality = ExtResource("2")

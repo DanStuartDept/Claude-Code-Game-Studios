@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1")
-character_name = "Conchobar Cr\u00edonna"
+character_name = "Conchobar Críonna"
 character_id = "conchobar"
 difficulty = 5
 personality = ExtResource("2")
