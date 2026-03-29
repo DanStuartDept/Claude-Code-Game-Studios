@@ -47,6 +47,10 @@ var input_block_during_transition: bool = true
 ## The loaded scene can read this in _ready(). Cleared after each scene change.
 var scene_data: Dictionary = {}
 
+## Autoplay configuration loaded from user://autoplay.cfg at startup.
+## Keys: "enabled" (bool), "fast" (bool), "runs" (int). Persists across scenes.
+var autoplay_config: Dictionary = {}
+
 
 # --- Internal State ---
 

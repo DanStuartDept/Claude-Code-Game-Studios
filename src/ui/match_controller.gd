@@ -70,13 +70,16 @@ var _last_match_result: Dictionary = {}
 # ---------------------------------------------------------------------------
 
 func _ready() -> void:
-	# Check for --autoplay command line flag
-	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
-		debug_autoplay = true
-		print("[MATCH] Auto-play mode enabled")
-
 	# Load settings from scene data
 	var scene_manager: Node = get_node_or_null("/root/SceneManager")
+
+	# Check for --autoplay command line flag or file-based trigger
+	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
+		debug_autoplay = true
+		print("[MATCH] Auto-play mode enabled (CLI)")
+	elif scene_manager != null and scene_manager.autoplay_config.get("enabled", false):
+		debug_autoplay = true
+		print("[MATCH] Auto-play mode enabled (cfg file)")
 	if scene_manager != null:
 		if scene_manager.scene_data.has("opponent_profile_path"):
 			var path: String = scene_manager.scene_data["opponent_profile_path"]

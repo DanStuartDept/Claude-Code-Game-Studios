@@ -79,8 +79,13 @@ func _ready() -> void:
 		scene_manager.register_scene(&"menu", "res://scenes/menu/MainMenu.tscn")
 		scene_manager.register_scene(&"campaign_map", "res://scenes/campaign/CampaignMap.tscn")
 
-	# Auto-play: skip menu and go straight to campaign
-	if OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay"):
+	# Auto-play: check CLI flag or user://autoplay.cfg file trigger
+	var autoplay_detected: bool = OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay")
+	if not autoplay_detected:
+		autoplay_detected = _load_autoplay_cfg()
+	if autoplay_detected:
+		if scene_manager != null and scene_manager.autoplay_config.is_empty():
+			scene_manager.autoplay_config = { "enabled": true, "fast": false, "runs": 1 }
 		print("[MENU] Auto-play detected, launching campaign...")
 		_on_campaign_pressed()
 
@@ -174,6 +179,43 @@ func _start_new_campaign() -> void:
 		visible = false
 		scene_manager.change_scene(&"campaign_map")
 		queue_free()
+
+
+## Load autoplay config from user://autoplay.cfg if it exists.
+## Config format (INI-style): fast=true/false, runs=N (one key=value per line).
+## Returns true if the file was found and parsed.
+func _load_autoplay_cfg() -> bool:
+	var cfg_path: String = "user://autoplay.cfg"
+	if not FileAccess.file_exists(cfg_path):
+		return false
+
+	var file: FileAccess = FileAccess.open(cfg_path, FileAccess.READ)
+	if file == null:
+		return false
+
+	var config: Dictionary = { "enabled": true, "fast": false, "runs": 1 }
+	while not file.eof_reached():
+		var line: String = file.get_line().strip_edges()
+		if line == "" or line.begins_with("#"):
+			continue
+		var parts: PackedStringArray = line.split("=", true, 1)
+		if parts.size() != 2:
+			continue
+		var key: String = parts[0].strip_edges()
+		var value: String = parts[1].strip_edges()
+		match key:
+			"fast":
+				config["fast"] = value.to_lower() == "true"
+			"runs":
+				config["runs"] = value.to_int()
+
+	file.close()
+	print("[MENU] Loaded autoplay.cfg: %s" % str(config))
+
+	var scene_manager: Node = get_node_or_null("/root/SceneManager")
+	if scene_manager != null:
+		scene_manager.autoplay_config = config
+	return true
 
 
 func _launch_quick_play(profile_path: String) -> void:

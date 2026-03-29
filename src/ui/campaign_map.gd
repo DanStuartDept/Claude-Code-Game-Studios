@@ -83,6 +83,8 @@ func _ready() -> void:
 	_feud = get_node_or_null("/root/FeudSystem")
 	_scene_manager = get_node_or_null("/root/SceneManager")
 	_autoplay = OS.get_cmdline_args().has("--autoplay") or OS.get_cmdline_user_args().has("--autoplay")
+	if not _autoplay and _scene_manager != null:
+		_autoplay = _scene_manager.autoplay_config.get("enabled", false)
 
 	# Register scenes
 	if _scene_manager != null:
