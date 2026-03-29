@@ -7,7 +7,7 @@
 script = ExtResource("1")
 character_name = "Murchadh mac Fáelán"
 character_id = "murchadh"
-difficulty = 7
+difficulty = 9
 personality = ExtResource("2")
 feud_tendency = 0.0
 description = "The champion who disgraced you at Tara. Plays with cold precision."

@@ -7,7 +7,7 @@
 script = ExtResource("1")
 character_name = "Orlaith na gCros"
 character_id = "orlaith"
-difficulty = 4
+difficulty = 3
 personality = ExtResource("2")
 feud_tendency = 0.2
 description = "A crossroads scholar who plays like she's solving a puzzle — methodical, unhurried, always three moves ahead"

@@ -1,0 +1,62 @@
+{
+	"avg_moves_per_match": 22,
+	"campaign_end": "2026-03-29T20:22:37",
+	"campaign_start": "2026-03-29T20:12:23",
+	"chapter_breakdown": {
+		"0": {
+			"avg_difficulty": 3.5,
+			"avg_moves": 9,
+			"losses": 1,
+			"matches": 2,
+			"rep_earned": 7,
+			"wins": 1
+		},
+		"1": {
+			"avg_difficulty": 2.5,
+			"avg_moves": 19,
+			"losses": 8,
+			"matches": 12,
+			"rep_earned": 26,
+			"wins": 4
+		},
+		"2": {
+			"avg_difficulty": 3.875,
+			"avg_moves": 21,
+			"losses": 28,
+			"matches": 32,
+			"rep_earned": 28,
+			"wins": 4
+		},
+		"3": {
+			"avg_difficulty": 4.66666666666667,
+			"avg_moves": 35,
+			"losses": 2,
+			"matches": 6,
+			"rep_earned": 31,
+			"wins": 4
+		},
+		"4": {
+			"avg_difficulty": 5.8,
+			"avg_moves": 25,
+			"losses": 2,
+			"matches": 5,
+			"rep_earned": 24,
+			"wins": 3
+		}
+	},
+	"fastest_win_moves": 0,
+	"final_reputation": 116,
+	"losses": 41,
+	"rep_by_bonus_type": {
+		"base": 80,
+		"boss": 12,
+		"decisive": 6,
+		"rematch": 8,
+		"speed": 10
+	},
+	"slowest_win_moves": 86,
+	"total_matches": 57,
+	"total_moves": 1268,
+	"win_rate": 0.280701754385965,
+	"wins": 16
+}

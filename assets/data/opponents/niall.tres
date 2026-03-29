@@ -7,7 +7,7 @@
 script = ExtResource("1")
 character_name = "Niall na Naoi gCailleadh"
 character_id = "niall"
-difficulty = 6
+difficulty = 7
 personality = ExtResource("2")
 feud_tendency = 0.3
 description = "Nine losses made him — he plays like a man who has already paid every price the board can ask"
